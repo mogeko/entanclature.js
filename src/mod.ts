@@ -2,6 +2,4 @@ function main() {
   console.log("Hello, World!");
 }
 
-main();
-
-export {};
+export default main();

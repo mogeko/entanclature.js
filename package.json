@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "vitest",
+    "cov": "vitest --coverage",
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },
@@ -14,6 +16,7 @@
     "@types/node": "^18.11.2",
     "prettier": "^2.7.1",
     "typescript": "^4.6.4",
-    "vite": "^3.1.0"
+    "vite": "^3.1.0",
+    "vitest": "^0.24.3"
   }
 }

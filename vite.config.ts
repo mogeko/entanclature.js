@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import pkg from "./package.json";
 import path from "path";
@@ -14,5 +15,11 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
+  },
+  define: {
+    "import.meta.vitest": "undefined",
+  },
+  test: {
+    includeSource: ["src/**/*.{js,ts}"],
   },
 });

@@ -15,6 +15,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
+    "types": ["vite/client", "vitest/importMeta"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
