@@ -8,12 +8,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "cov": "vitest --coverage",
+    "cov": "vitest run --coverage",
     "lint": "prettier --check .",
     "format": "prettier --write ."
   },
   "devDependencies": {
     "@types/node": "^18.11.2",
+    "@vitest/coverage-c8": "^0.24.3",
     "prettier": "^2.7.1",
     "typescript": "^4.6.4",
     "vite": "^3.1.0",

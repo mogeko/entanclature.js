@@ -21,5 +21,8 @@ export default defineConfig({
   },
   test: {
     includeSource: ["src/**/*.{js,ts}"],
+    coverage: {
+      reporter: ["text", "json", "html"],
+    },
   },
 });
