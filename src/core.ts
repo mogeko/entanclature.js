@@ -4,7 +4,7 @@ export function entanglement(url: URL) {
   };
 }
 
-export function nomenclature(hash: string, meta: Meta, opts?: Opts) {
+export function nomenclature(_hash: string, _meta: Meta, _opts?: Opts) {
   return new URL("");
 }
 
