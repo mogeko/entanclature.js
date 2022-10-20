@@ -1,11 +1,13 @@
+import { AVAILABLE_MIME } from "./mime";
 import isEmpty from "./utils/isEmpty";
 
-const AVAILABLE_EXT = ["avif", "gif", "jpeg", "jpg", "png", "tiff", "webp"] as const;
+import type { Ext, MIME } from "./mime";
 
 export class ExURL extends URL {
   private _baseURL: string;
   private _extension?: Ext;
   private _filename?: string;
+  private _mime?: MIME;
 
   constructor(url: string) {
     super(url);
@@ -29,9 +31,10 @@ export class ExURL extends URL {
 
   public set extension(ext: Ext | undefined) {
     if (!ext) return;
-    if (AVAILABLE_EXT.includes(ext)) {
+    if (Object.keys(AVAILABLE_MIME).includes(ext)) {
       this._extension = ext;
-    } else throw URIError(`We don't support .${ext} files yet.`);
+      this.mime = AVAILABLE_MIME[ext];
+    } else throw URIError(`We don't support ${this.mime} files yet.`);
   }
 
   public get extension() {
@@ -55,19 +58,26 @@ export class ExURL extends URL {
   public get filename() {
     return this._filename;
   }
-}
 
-type Ext = typeof AVAILABLE_EXT[number];
+  public set mime(mime: MIME | undefined) {
+    this._mime = mime;
+  }
+
+  public get mime() {
+    return this._mime;
+  }
+}
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
 
   it("ExURL", () => {
-    const url = new ExURL("https://example.com/with/some/files");
+    const url = new ExURL("https://example.com/with/some/files.png");
 
     expect(url.baseURL).toEqual("https://example.com/with/some/");
-    expect(url.file).toEqual("files");
+    expect(url.file).toEqual("files.png");
     expect(url.filename).toEqual("files");
-    expect(url.extension).toEqual(undefined);
+    expect(url.extension).toEqual("png");
+    expect(url.mime).toEqual("image/png");
   });
 }
