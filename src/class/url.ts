@@ -1,7 +1,7 @@
-import { AVAILABLE_MIME } from "./mime";
-import isEmpty from "./utils/isEmpty";
+import { AVAILABLE_MIME } from "../core/grammar";
+import isEmpty from "../utils/isEmpty";
 
-import type { Ext, MIME } from "./mime";
+import type { Ext, MIME } from "../core/grammar";
 
 export class ExURL extends URL {
   private _baseURL: string;

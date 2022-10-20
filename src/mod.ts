@@ -1,11 +1,12 @@
 import fs from "fs/promises";
 import _path from "path";
-import { entanglement, nomenclature } from "./core";
-import { ExURL } from "./url";
+import nomenclature from "./core/nomenclature";
+import entanglement from "./core/entanglement";
+import { ExURL } from "./class/url";
 import hash from "./utils/hash";
 import isURL from "./utils/isURL";
 
-import type { Meta, Opts } from "./core";
+import type { Meta, Opts } from "./core/nomenclature";
 
 async function main(url: string | ExURL): Promise<Result>;
 async function main(path: string, meta: Meta, opts?: Opts): Promise<Result>;
