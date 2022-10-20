@@ -1,3 +1,5 @@
+import isURL from "./utils/isURL";
+
 export function entanglement(url: URL) {
   return {
     sources: [url],
@@ -5,7 +7,11 @@ export function entanglement(url: URL) {
 }
 
 export function nomenclature(_hash: string, _meta: Meta, opts?: Opts) {
-  return new URL(opts?.baseURL!);
+  if (opts?.baseURL && isURL(opts?.baseURL)) {
+    return new URL(opts?.baseURL);
+  } else {
+    throw new URIError(`You can't create URL from ${opts?.baseURL}`);
+  }
 }
 
 export type Meta = {};
