@@ -1,4 +1,4 @@
-import { AVAILABLE_MIME } from "../core/grammar";
+import GRAMMAR from "../core/grammar";
 import isEmpty from "../utils/isEmpty";
 
 import type { Ext, MIME } from "../core/grammar";
@@ -30,10 +30,12 @@ export class ExURL extends URL {
   }
 
   public set extension(ext: Ext | undefined) {
+    const meta = Object.values(GRAMMAR);
+
     if (!ext) return;
-    if (Object.keys(AVAILABLE_MIME).includes(ext)) {
+    if (meta.flatMap((v) => v.ext).includes(ext)) {
       this._extension = ext;
-      this.mime = AVAILABLE_MIME[ext];
+      this.mime = meta.find((v) => Array.from(v.ext).includes(ext))?.mime;
     } else throw URIError(`We don't support ${this.mime} files yet.`);
   }
 
