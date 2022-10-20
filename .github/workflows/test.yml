@@ -23,9 +23,9 @@ jobs:
         with:
           node-version: 16
           cache: "pnpm"
-      - name: Lint check
-        run: pnpm lint
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Lint check
+        run: pnpm lint
       - name: Run test
         run: pnpm cov
