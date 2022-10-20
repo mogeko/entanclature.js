@@ -25,3 +25,6 @@ dist-ssr
 
 # Code coverage directory
 coverage
+
+# Types from TypeScript compiler
+types

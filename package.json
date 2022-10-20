@@ -5,6 +5,7 @@
   "type": "module",
   "main": "dist/entanclature.umd.js",
   "module": "dist/entanclature.js",
+  "types": "types/mod.d.ts",
   "homepage": "https://github.com/mogeko/entanclature.js",
   "repository": {
     "type": "git",
@@ -18,11 +19,12 @@
     "email": "zhengjunyi@live.com"
   },
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
     "cov": "vitest run --coverage",
@@ -30,6 +32,7 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
     "@types/node": "^18.11.2",
     "@vitest/coverage-c8": "^0.24.3",
     "prettier": "^2.7.1",
