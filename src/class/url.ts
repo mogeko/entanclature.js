@@ -50,7 +50,11 @@ class ExURL extends URL {
   }
 
   public get file() {
-    return [this.filename, this.extension].filter((s) => !isEmpty(s)).join(".");
+    if (this.extension) {
+      return [this.filename, this.extension].join(".");
+    } else {
+      return this.filename;
+    }
   }
 
   public set filename(name: string | undefined) {
