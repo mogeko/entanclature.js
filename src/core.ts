@@ -4,13 +4,13 @@ export function entanglement(url: URL) {
   };
 }
 
-export function nomenclature(hash: string, meta: Meta, opts?: OptsType) {
+export function nomenclature(hash: string, meta: Meta, opts?: Opts) {
   return new URL("");
 }
 
 export type Meta = {};
 
-export type OptsType = {
+export type Opts = {
   baseURL: string;
 };
 

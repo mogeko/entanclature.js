@@ -17,6 +17,5 @@ if (import.meta.vitest) {
     const _hash = hash(Buffer.from(exampleText, "utf-8"));
 
     expect(_hash).toEqual(exampleHash);
-    expect(_hash).toMatchSnapshot();
   });
 }

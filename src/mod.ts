@@ -2,13 +2,18 @@ import fs from "fs/promises";
 import _path from "path";
 import { entanglement, nomenclature } from "@/core";
 import hash from "@/utils/hash";
+import isURL from "./utils/isURL";
 
-import type { Meta, OptsType } from "@/core";
+import type { Meta, Opts } from "@/core";
 
-function entanclature(url: string | URL): Result;
-function entanclature(path: string, meta: Meta, opts?: OptsType): Result;
-function entanclature(source: string | URL, meta?: Meta, opts?: OptsType) {
-  return entanclature(new URL(""));
+async function entanclature(url: string | URL): Promise<Result>;
+async function entanclature(path: string, meta: Meta, opts?: Opts): Promise<Result>;
+async function entanclature(source: string | URL, meta?: Meta, opts?: Opts) {
+  if (typeof source == "string" && !isURL(source)) {
+    return meta ? await fromFile(source, meta, opts) : void 0;
+  } else {
+    return fromURL(source);
+  }
 }
 
 function fromURL(url: string | URL) {
@@ -17,7 +22,7 @@ function fromURL(url: string | URL) {
   return entanglement(_url);
 }
 
-async function fromFile(path: string, meta: Meta, opts?: OptsType) {
+async function fromFile(path: string, meta: Meta, opts?: Opts) {
   const filepath = _path.resolve(path);
   const file = await fs.readFile(filepath);
 
