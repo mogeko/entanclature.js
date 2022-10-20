@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import _path from "path";
 import nomenclature from "./core/nomenclature";
 import entanglement from "./core/entanglement";
-import { ExURL } from "./class/url";
+import ExURL from "./class/url";
 import hash from "./utils/hash";
 import isURL from "./utils/isURL";
 

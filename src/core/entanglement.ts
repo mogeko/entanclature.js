@@ -1,4 +1,4 @@
-import { ExURL } from "../class/url";
+import ExURL from "../class/url";
 
 function entanglement(url: ExURL) {
   return {

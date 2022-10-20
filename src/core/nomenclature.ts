@@ -1,4 +1,4 @@
-import { ExURL } from "../class/url";
+import ExURL from "../class/url";
 import isURL from "../utils/isURL";
 
 function nomenclature(_hash: string, _meta: Meta, opts?: Opts) {

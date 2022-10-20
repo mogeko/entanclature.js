@@ -3,7 +3,7 @@ import isEmpty from "../utils/isEmpty";
 
 import type { Ext, MIME } from "../core/grammar";
 
-export class ExURL extends URL {
+class ExURL extends URL {
   private _baseURL: string;
   private _extension?: Ext;
   private _filename?: string;
@@ -69,6 +69,8 @@ export class ExURL extends URL {
     return this._mime;
   }
 }
+
+export default ExURL;
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
