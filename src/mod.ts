@@ -1,23 +1,24 @@
 import fs from "fs/promises";
 import _path from "path";
 import { entanglement, nomenclature } from "./core";
+import { ExURL } from "./url";
 import hash from "./utils/hash";
 import isURL from "./utils/isURL";
 
 import type { Meta, Opts } from "./core";
 
-async function main(url: string | URL): Promise<Result>;
+async function main(url: string | ExURL): Promise<Result>;
 async function main(path: string, meta: Meta, opts?: Opts): Promise<Result>;
-async function main(source: string | URL, meta?: Meta, opts?: Opts) {
-  if (typeof source == "string" && !isURL(source)) {
+async function main(source: string | ExURL, meta?: Meta, opts?: Opts) {
+  if (typeof source === "string" && !isURL(source)) {
     return meta ? await fromFile(source, meta, opts) : void 0;
   } else {
     return fromURL(source);
   }
 }
 
-function fromURL(url: string | URL) {
-  const _url = typeof url == "string" ? new URL(url) : url;
+function fromURL(url: string | ExURL) {
+  const _url = typeof url === "string" ? new ExURL(url) : url;
 
   return entanglement(_url);
 }
