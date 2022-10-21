@@ -45,5 +45,9 @@ export default defineConfig({
         },
       ],
     },
+    footer: {
+      message: "Released under the CC-BY-SA-4.0 License.",
+      copyright: "Copyright © 2022 Zheng Junyi",
+    },
   },
 });
