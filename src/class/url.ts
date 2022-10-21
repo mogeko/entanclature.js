@@ -21,10 +21,6 @@ class FileURL extends URL {
     }
   }
 
-  set baseURL(url: string) {
-    [this.protocol, this.host] = url.split("//");
-  }
-
   get baseURL() {
     return `${this.protocol}//${this.host}`;
   }
