@@ -26,7 +26,7 @@ class ExURL extends URL {
   }
 
   public get baseURL() {
-    return this._baseURL.endsWith("/") ? this._baseURL : this._baseURL + "/";
+    return this._baseURL + "/";
   }
 
   public set extension(ext: Ext | undefined) {
