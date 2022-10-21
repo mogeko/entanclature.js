@@ -34,7 +34,7 @@ class FileURL extends URL {
     if (!ext) return;
     if (meta.flatMap((v) => v.ext).includes(ext)) {
       this._extension = ext;
-      this.mime = meta.find((v) => Array.from(v.ext).includes(ext))?.mime;
+      this._mime = meta.find((v) => Array.from(v.ext).includes(ext))?.mime;
     } else throw URIError(`We don't support ${ext} files yet.`);
   }
 
@@ -62,7 +62,7 @@ class FileURL extends URL {
     if (!mime) return;
     if (meta.map((v) => v.mime).includes(mime)) {
       this._mime = mime;
-    } else throw URIError(`We don't support ${mime} files yet.`);
+    } else throw URIError(`We don't support ${mime} type yet.`);
   }
 
   get mime() {

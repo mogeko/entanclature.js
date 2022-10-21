@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import FileURL from "../../src/class/url";
 
+import type { MIME } from "../../src/core/grammar";
+
 describe("FileURL", () => {
   it("Generate FileURL with protocol and host", () => {
     const url = new FileURL("https://example.com");
@@ -30,6 +32,25 @@ describe("FileURL", () => {
     } catch (err) {
       expect(err.name).toEqual("URIError");
       expect(err.message).toEqual("We don't support txt files yet.");
+    }
+  });
+
+  it("Generate FileURL by set MIM manually", () => {
+    const url = new FileURL("https://example.com/path/without/extension");
+    url.mime = "image/avif";
+
+    expect(url.extension).toBeUndefined();
+    expect(url.mime).toEqual("image/avif");
+    expect(url.file).toEqual("extension");
+  });
+
+  it("Generate FileURL with an illegal MIME type", () => {
+    try {
+      const url = new FileURL("https://example.com/some/file.png");
+      url.mime = "text/plain" as MIME;
+    } catch (err) {
+      expect(err.name).toEqual("URIError");
+      expect(err.message).toEqual("We don't support text/plain type yet.");
     }
   });
 });
