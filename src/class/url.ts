@@ -5,9 +5,9 @@ import type { Ext, MIME } from "../core/grammar";
 
 class FileURL extends URL {
   private _extension?: Ext;
-  private _filedir?: string;
-  private _filename?: string;
   private _mime?: MIME;
+  filedir?: string;
+  filename?: string;
 
   constructor(url: string) {
     super(url);
@@ -19,15 +19,15 @@ class FileURL extends URL {
     }
   }
 
-  public set baseURL(url: string) {
+  set baseURL(url: string) {
     [this.protocol, this.host] = url.split("//");
   }
 
-  public get baseURL() {
+  get baseURL() {
     return `${this.protocol}//${this.host}`;
   }
 
-  public set extension(ext: Ext | undefined) {
+  set extension(ext: Ext | undefined) {
     const meta = Object.values(GRAMMAR);
 
     if (!ext) return;
@@ -37,17 +37,17 @@ class FileURL extends URL {
     } else throw URIError(`We don't support ${ext} files yet.`);
   }
 
-  public get extension() {
+  get extension() {
     return this._extension;
   }
 
-  public set file(file: string | undefined) {
+  set file(file: string | undefined) {
     const [filename, ext] = (file ?? "").split(".");
     this.filename = filename;
     this.extension = ext as Ext;
   }
 
-  public get file() {
+  get file() {
     if (this.extension) {
       return [this.filename, this.extension].join(".");
     } else {
@@ -55,27 +55,11 @@ class FileURL extends URL {
     }
   }
 
-  public set filedir(dir: string | undefined) {
-    this._filedir = dir;
-  }
-
-  public get filedir() {
-    return this._filedir;
-  }
-
-  public set filename(name: string | undefined) {
-    this._filename = name;
-  }
-
-  public get filename() {
-    return this._filename;
-  }
-
-  public set mime(mime: MIME | undefined) {
+  set mime(mime: MIME | undefined) {
     this._mime = mime;
   }
 
-  public get mime() {
+  get mime() {
     return this._mime;
   }
 }
