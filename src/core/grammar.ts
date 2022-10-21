@@ -1,4 +1,4 @@
-const GRAMMAR = {
+export const GRAMMAR = {
   A: { mime: "image/avif", ext: ["avif"] },
   G: { mime: "image/gif", ext: ["gif"] },
   J: { mime: "image/jpeg", ext: ["jpeg", "jpg"] },
@@ -10,5 +10,3 @@ const GRAMMAR = {
 type ValueOf<T> = T[keyof T];
 export type MIME = ValueOf<typeof GRAMMAR>["mime"];
 export type Ext = ValueOf<typeof GRAMMAR>["ext"][number];
-
-export default GRAMMAR;
