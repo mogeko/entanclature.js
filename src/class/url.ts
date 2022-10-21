@@ -9,8 +9,8 @@ class FileURL extends URL {
   filedir?: string;
   filename?: string;
 
-  constructor(url: string) {
-    super(url);
+  constructor(url: string | FileURL, base?: string | FileURL) {
+    super(url, base);
 
     if (this.pathname.length !== 1) {
       const _pathname = this.pathname;

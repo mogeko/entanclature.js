@@ -62,4 +62,15 @@ describe("FileURL", () => {
       expect(err.message).toEqual("We don't support text/plain type yet.");
     }
   });
+
+  it("Generate FileURL with a FileURL", () => {
+    const base = new FileURL("https://example.com/some/file.png");
+    const url = new FileURL("/other/file.avif", base);
+
+    expect(url.baseURL).toEqual(base.baseURL);
+    expect(base.mime).toEqual("image/png");
+    expect(url.mime).toEqual("image/avif");
+    expect(url.filedir).toEqual("/other/");
+    expect(url.file).toEqual("file.avif");
+  });
 });
