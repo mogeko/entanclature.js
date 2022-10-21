@@ -5,7 +5,8 @@ describe("ExURL", () => {
   it("Generate ExURL with protocol and host", () => {
     const url = new ExURL("https://example.com");
 
-    expect(url.baseURL).toEqual("https://example.com/");
+    expect(url.baseURL).toEqual("https://example.com");
+    expect(url.filedir).toBeUndefined();
     expect(url.extension).toBeUndefined();
     expect(url.file).toBeUndefined();
     expect(url.filename).toBeUndefined();
@@ -15,7 +16,8 @@ describe("ExURL", () => {
   it("Generate ExURL that path without extension", () => {
     const url = new ExURL("https://example.com/path/without/extension");
 
-    expect(url.baseURL).toEqual("https://example.com/path/without/");
+    expect(url.baseURL).toEqual("https://example.com");
+    expect(url.filedir).toEqual("/path/without/");
     expect(url.extension).toBeUndefined();
     expect(url.file).toEqual("extension");
     expect(url.filename).toEqual("extension");

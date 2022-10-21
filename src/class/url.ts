@@ -4,29 +4,27 @@ import isEmpty from "../utils/isEmpty";
 import type { Ext, MIME } from "../core/grammar";
 
 class ExURL extends URL {
-  private _baseURL: string;
   private _extension?: Ext;
+  private _filedir?: string;
   private _filename?: string;
   private _mime?: MIME;
 
   constructor(url: string) {
     super(url);
 
-    this._baseURL = `${this.protocol}//${this.host}`;
-
     if (this.pathname.length !== 1) {
       const pathList = this.pathname.split("/").filter((s) => !isEmpty(s));
       this.file = pathList.pop();
-      this.baseURL += pathList.join("/");
+      this.filedir = "/" + pathList.join("/") + "/";
     }
   }
 
   public set baseURL(url: string) {
-    this._baseURL = url;
+    [this.protocol, this.host] = url.split("//");
   }
 
   public get baseURL() {
-    return this._baseURL + "/";
+    return `${this.protocol}//${this.host}`;
   }
 
   public set extension(ext: Ext | undefined) {
@@ -57,6 +55,14 @@ class ExURL extends URL {
     }
   }
 
+  public set filedir(dir: string | undefined) {
+    this._filedir = dir;
+  }
+
+  public get filedir() {
+    return this._filedir;
+  }
+
   public set filename(name: string | undefined) {
     this._filename = name;
   }
@@ -82,7 +88,8 @@ if (import.meta.vitest) {
   it("ExURL", () => {
     const url = new ExURL("https://example.com/with/some/files.png");
 
-    expect(url.baseURL).toEqual("https://example.com/with/some/");
+    expect(url.baseURL).toEqual("https://example.com");
+    expect(url.filedir).toEqual("/with/some/");
     expect(url.file).toEqual("files.png");
     expect(url.filename).toEqual("files");
     expect(url.extension).toEqual("png");
