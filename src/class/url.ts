@@ -57,7 +57,12 @@ class FileURL extends URL {
   }
 
   set mime(mime: MIME | undefined) {
-    this._mime = mime;
+    const meta = Object.values(GRAMMAR);
+
+    if (!mime) return;
+    if (meta.map((v) => v.mime).includes(mime)) {
+      this._mime = mime;
+    } else throw URIError(`We don't support ${mime} files yet.`);
   }
 
   get mime() {
