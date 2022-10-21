@@ -1,55 +1,51 @@
 import GRAMMAR from "../core/grammar";
-import isEmpty from "../utils/isEmpty";
 
 import type { Ext, MIME } from "../core/grammar";
+import isEmpty from "../utils/isEmpty";
 
-class ExURL extends URL {
-  private _baseURL: string;
+class FileURL extends URL {
   private _extension?: Ext;
-  private _filename?: string;
   private _mime?: MIME;
+  filedir?: string;
+  filename?: string;
 
-  constructor(url: string) {
-    super(url);
-
-    this._baseURL = `${this.protocol}//${this.host}`;
+  constructor(url: string | FileURL, base?: string | FileURL) {
+    super(url, base);
 
     if (this.pathname.length !== 1) {
-      const pathList = this.pathname.split("/").filter((s) => !isEmpty(s));
-      this.file = pathList.pop();
-      this.baseURL += pathList.join("/");
+      const _pathname = this.pathname;
+      const path = _pathname.endsWith("/") ? _pathname.slice(0, -1) : _pathname;
+      const breakpoint = path.lastIndexOf("/") + 1;
+      this.file = path.slice(breakpoint);
+      this.filedir = path.slice(0, breakpoint);
     }
   }
 
-  public set baseURL(url: string) {
-    this._baseURL = url;
+  get baseURL() {
+    return `${this.protocol}//${this.host}`;
   }
 
-  public get baseURL() {
-    return this._baseURL + "/";
-  }
-
-  public set extension(ext: Ext | undefined) {
+  set extension(ext: Ext | undefined) {
     const meta = Object.values(GRAMMAR);
 
     if (!ext) return;
     if (meta.flatMap((v) => v.ext).includes(ext)) {
       this._extension = ext;
-      this.mime = meta.find((v) => Array.from(v.ext).includes(ext))?.mime;
+      this._mime = meta.find((v) => Array.from(v.ext).includes(ext))?.mime;
     } else throw URIError(`We don't support ${ext} files yet.`);
   }
 
-  public get extension() {
+  get extension() {
     return this._extension;
   }
 
-  public set file(file: string | undefined) {
+  set file(file: string | undefined) {
     const [filename, ext] = (file ?? "").split(".");
     this.filename = filename;
     this.extension = ext as Ext;
   }
 
-  public get file() {
+  get file() {
     if (this.extension) {
       return [this.filename, this.extension].join(".");
     } else {
@@ -57,32 +53,33 @@ class ExURL extends URL {
     }
   }
 
-  public set filename(name: string | undefined) {
-    this._filename = name;
+  set mime(mime: MIME | undefined) {
+    const meta = Object.values(GRAMMAR);
+
+    if (!mime) return;
+    if (meta.map((v) => v.mime).includes(mime)) {
+      this._mime = mime;
+      if (!isEmpty(this._extension)) {
+        this._extension = meta.find((v) => v.mime === mime)?.ext[0];
+      }
+    } else throw URIError(`We don't support ${mime} type yet.`);
   }
 
-  public get filename() {
-    return this._filename;
-  }
-
-  public set mime(mime: MIME | undefined) {
-    this._mime = mime;
-  }
-
-  public get mime() {
+  get mime() {
     return this._mime;
   }
 }
 
-export default ExURL;
+export default FileURL;
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
 
-  it("ExURL", () => {
-    const url = new ExURL("https://example.com/with/some/files.png");
+  it("FileURL", () => {
+    const url = new FileURL("https://example.com/with/some/files.png/");
 
-    expect(url.baseURL).toEqual("https://example.com/with/some/");
+    expect(url.baseURL).toEqual("https://example.com");
+    expect(url.filedir).toEqual("/with/some/");
     expect(url.file).toEqual("files.png");
     expect(url.filename).toEqual("files");
     expect(url.extension).toEqual("png");
