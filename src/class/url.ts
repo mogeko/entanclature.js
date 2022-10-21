@@ -36,7 +36,7 @@ class ExURL extends URL {
     if (meta.flatMap((v) => v.ext).includes(ext)) {
       this._extension = ext;
       this.mime = meta.find((v) => Array.from(v.ext).includes(ext))?.mime;
-    } else throw URIError(`We don't support ${this.mime} files yet.`);
+    } else throw URIError(`We don't support ${ext} files yet.`);
   }
 
   public get extension() {
