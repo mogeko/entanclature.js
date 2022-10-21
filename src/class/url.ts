@@ -1,5 +1,4 @@
 import GRAMMAR from "../core/grammar";
-import isEmpty from "../utils/isEmpty";
 
 import type { Ext, MIME } from "../core/grammar";
 
@@ -13,9 +12,11 @@ class FileURL extends URL {
     super(url);
 
     if (this.pathname.length !== 1) {
-      const pathList = this.pathname.split("/").filter((s) => !isEmpty(s));
-      this.file = pathList.pop();
-      this.filedir = "/" + pathList.join("/") + "/";
+      const _pathname = this.pathname;
+      const path = _pathname.endsWith("/") ? _pathname.slice(0, -1) : _pathname;
+      const breakpoint = path.lastIndexOf("/") + 1;
+      this.file = path.slice(breakpoint);
+      this.filedir = path.slice(0, breakpoint);
     }
   }
 
