@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import FileURL from "../../src/class/url";
+import { FileURL } from "../../src/class/url";
 
 import type { MIME } from "../../src/core/grammar";
 
