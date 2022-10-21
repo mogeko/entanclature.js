@@ -35,13 +35,22 @@ describe("FileURL", () => {
     }
   });
 
-  it("Generate FileURL by set MIM manually", () => {
+  it("Generate FileURL by set MIME manually", () => {
     const url = new FileURL("https://example.com/path/without/extension");
     url.mime = "image/avif";
 
     expect(url.extension).toBeUndefined();
     expect(url.mime).toEqual("image/avif");
     expect(url.file).toEqual("extension");
+  });
+
+  it("Generate FileURL by change MIME manually", () => {
+    const url = new FileURL("https://example.com/some/file.png");
+    url.mime = "image/avif";
+
+    expect(url.extension).toEqual("avif");
+    expect(url.mime).toEqual("image/avif");
+    expect(url.file).toEqual("file.avif");
   });
 
   it("Generate FileURL with an illegal MIME type", () => {

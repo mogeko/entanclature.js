@@ -1,6 +1,7 @@
 import GRAMMAR from "../core/grammar";
 
 import type { Ext, MIME } from "../core/grammar";
+import isEmpty from "../utils/isEmpty";
 
 class FileURL extends URL {
   private _extension?: Ext;
@@ -62,6 +63,9 @@ class FileURL extends URL {
     if (!mime) return;
     if (meta.map((v) => v.mime).includes(mime)) {
       this._mime = mime;
+      if (!isEmpty(this._extension)) {
+        this._extension = meta.find((v) => v.mime === mime)?.ext[0];
+      }
     } else throw URIError(`We don't support ${mime} type yet.`);
   }
 
