@@ -1,12 +1,10 @@
 import crypto from "crypto";
 
-function hash(msg: Buffer) {
+export function hash(msg: Buffer) {
   const sha256 = crypto.createHash("sha1").update(msg).digest("hex");
 
   return sha256.substring(0, 7).toUpperCase();
 }
-
-export default hash;
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;

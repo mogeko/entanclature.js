@@ -1,4 +1,4 @@
-function isEmpty(input: any) {
+export function isEmpty(input: any) {
   if (!input) return true;
 
   if (typeof input === "object") {
@@ -7,8 +7,6 @@ function isEmpty(input: any) {
 
   return false;
 }
-
-export default isEmpty;
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;

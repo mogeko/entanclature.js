@@ -1,15 +1,13 @@
-import FileURL from "../class/url";
-import isURL from "../utils/isURL";
+import { FileURL } from "../models/url";
+import { isURL } from "../utils/is_url";
 
-function nomenclature(_hash: string, _meta: Meta, opts?: Opts) {
+export function encode(_hash: string, _meta: Meta, opts?: Opts) {
   if (opts?.baseURL && isURL(opts?.baseURL)) {
     return new FileURL(opts?.baseURL);
   } else {
     throw new URIError(`You can't create URL from ${opts?.baseURL}`);
   }
 }
-
-export default nomenclature;
 
 export type Meta = {};
 
@@ -22,8 +20,8 @@ if (import.meta.vitest) {
   const exampleTextURL = "https://example.com";
   const exampleURL = new FileURL(exampleTextURL);
 
-  it("nomenclature", () => {
-    const url = nomenclature("C3499C2", {}, { baseURL: exampleTextURL });
+  it("encode", () => {
+    const url = encode("C3499C2", {}, { baseURL: exampleTextURL });
 
     expect(url).toEqual(exampleURL);
   });

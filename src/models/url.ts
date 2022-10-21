@@ -1,9 +1,9 @@
-import GRAMMAR from "../core/grammar";
+import { GRAMMAR } from "./grammar";
+import { isEmpty } from "../utils/is_empty";
 
-import type { Ext, MIME } from "../core/grammar";
-import isEmpty from "../utils/isEmpty";
+import type { Ext, MIME } from "./grammar";
 
-class FileURL extends URL {
+export class FileURL extends URL {
   private _extension?: Ext;
   private _mime?: MIME;
   filedir?: string;
@@ -69,8 +69,6 @@ class FileURL extends URL {
     return this._mime;
   }
 }
-
-export default FileURL;
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
