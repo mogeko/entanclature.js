@@ -3,7 +3,7 @@ import isEmpty from "../utils/isEmpty";
 
 import type { Ext, MIME } from "../core/grammar";
 
-class ExURL extends URL {
+class FileURL extends URL {
   private _extension?: Ext;
   private _filedir?: string;
   private _filename?: string;
@@ -80,13 +80,13 @@ class ExURL extends URL {
   }
 }
 
-export default ExURL;
+export default FileURL;
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
 
-  it("ExURL", () => {
-    const url = new ExURL("https://example.com/with/some/files.png");
+  it("FileURL", () => {
+    const url = new FileURL("https://example.com/with/some/files.png");
 
     expect(url.baseURL).toEqual("https://example.com");
     expect(url.filedir).toEqual("/with/some/");

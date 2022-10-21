@@ -1,9 +1,9 @@
-import ExURL from "../class/url";
+import FileURL from "../class/url";
 import isURL from "../utils/isURL";
 
 function nomenclature(_hash: string, _meta: Meta, opts?: Opts) {
   if (opts?.baseURL && isURL(opts?.baseURL)) {
-    return new ExURL(opts?.baseURL);
+    return new FileURL(opts?.baseURL);
   } else {
     throw new URIError(`You can't create URL from ${opts?.baseURL}`);
   }
@@ -20,7 +20,7 @@ export type Opts = {
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
   const exampleTextURL = "https://example.com";
-  const exampleURL = new ExURL(exampleTextURL);
+  const exampleURL = new FileURL(exampleTextURL);
 
   it("nomenclature", () => {
     const url = nomenclature("C3499C2", {}, { baseURL: exampleTextURL });

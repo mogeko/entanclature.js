@@ -1,6 +1,6 @@
-import ExURL from "../class/url";
+import FileURL from "../class/url";
 
-function entanglement(url: ExURL) {
+function entanglement(url: FileURL) {
   return {
     sources: [url],
   };
@@ -11,7 +11,7 @@ export default entanglement;
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
   const exampleTextURL = "https://example.com";
-  const exampleURL = new ExURL(exampleTextURL);
+  const exampleURL = new FileURL(exampleTextURL);
 
   it("entanglement", () => {
     expect(entanglement(exampleURL)).toEqual({
