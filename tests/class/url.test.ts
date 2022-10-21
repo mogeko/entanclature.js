@@ -21,4 +21,13 @@ describe("ExURL", () => {
     expect(url.filename).toEqual("extension");
     expect(url.mime).toBeUndefined();
   });
+
+  it("Generate ExURL with a unwilling file format", () => {
+    try {
+      new ExURL("https://example.com/unwilling/file/format.txt");
+    } catch (err) {
+      expect(err.name).toEqual("URIError");
+      expect(err.message).toEqual("We don't support txt files yet.");
+    }
+  });
 });
