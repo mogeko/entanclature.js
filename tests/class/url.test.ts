@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { FileURL } from "../../src/class/url";
+import { FileURL } from "../../src/models/url";
 
-import type { MIME } from "../../src/core/grammar";
+import type { MIME } from "../../src/models/grammar";
 
 describe("FileURL", () => {
   it("Generate FileURL with protocol and host", () => {

@@ -1,4 +1,4 @@
-import { FileURL } from "../class/url";
+import { FileURL } from "../models/url";
 
 export function mixer(url: FileURL) {
   return {

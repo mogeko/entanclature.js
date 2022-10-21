@@ -1,7 +1,7 @@
-import { GRAMMAR } from "../core/grammar";
+import { GRAMMAR } from "./grammar";
 import { isEmpty } from "../utils/is_empty";
 
-import type { Ext, MIME } from "../core/grammar";
+import type { Ext, MIME } from "./grammar";
 
 export class FileURL extends URL {
   private _extension?: Ext;

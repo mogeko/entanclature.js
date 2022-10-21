@@ -1,4 +1,4 @@
-import { FileURL } from "../class/url";
+import { FileURL } from "../models/url";
 import { isURL } from "../utils/is_url";
 
 export function encode(_hash: string, _meta: Meta, opts?: Opts) {

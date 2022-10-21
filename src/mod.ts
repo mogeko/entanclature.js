@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import sysPath from "path";
 import { encode } from "./core/nomenclature";
 import { mixer } from "./core/entanglement";
-import { FileURL } from "./class/url";
+import { FileURL } from "./models/url";
 import { hash } from "./utils/hash";
 import { isURL } from "./utils/is_url";
 
