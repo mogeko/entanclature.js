@@ -2,6 +2,7 @@ import { defineConfig } from "vitepress";
 
 export default defineConfig({
   title: "entanclature.js",
+  base: "/entanclature.js/",
   lang: "zh-CN",
   themeConfig: {
     nav: [
