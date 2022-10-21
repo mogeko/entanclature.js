@@ -76,7 +76,7 @@ if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
 
   it("FileURL", () => {
-    const url = new FileURL("https://example.com/with/some/files.png");
+    const url = new FileURL("https://example.com/with/some/files.png/");
 
     expect(url.baseURL).toEqual("https://example.com");
     expect(url.filedir).toEqual("/with/some/");
