@@ -35,8 +35,10 @@
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
+    "@types/mock-fs": "^4.13.1",
     "@types/node": "^18.11.2",
     "@vitest/coverage-c8": "^0.24.3",
+    "mock-fs": "^5.1.4",
     "prettier": "^2.7.1",
     "typedoc": "^0.23.17",
     "typedoc-plugin-markdown": "^3.13.6",
