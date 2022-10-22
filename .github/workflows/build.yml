@@ -1,4 +1,4 @@
-name: Build JavaScript Module
+name: Build
 
 on:
   push:
