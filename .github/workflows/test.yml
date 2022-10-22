@@ -1,4 +1,4 @@
-name: Test
+name: Unit Test and Code Coverage
 
 on:
   push:
@@ -29,3 +29,7 @@ jobs:
         run: pnpm lint
       - name: Run test
         run: pnpm cov
+      - name: Upload report to CodeCov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: coverage

@@ -1,4 +1,4 @@
-name: Build
+name: Build JavaScript Module
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build JavaScript Package
+    name: Build JavaScript Module
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
