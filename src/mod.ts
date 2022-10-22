@@ -6,7 +6,7 @@ import { FileURL } from "./models/url";
 import { hash } from "./utils/hash";
 import { isURL } from "./utils/is_url";
 
-import type { Meta, Opts } from "./core/nomenclature";
+import type { ExMeta as Meta } from "./core/nomenclature";
 
 /**
  * This may be the only function you need to follow!
@@ -49,12 +49,11 @@ async function main(url: string | FileURL): Promise<Result>;
  *
  * @param path - a string of file paths
  * @param meta - How should we handle this file?
- * @param opts - Additional options
  * */
-async function main(path: string, meta: Meta, opts?: Opts): Promise<Result>;
-async function main(source: string | FileURL, meta?: Meta, opts?: Opts) {
+async function main(path: string, meta: Meta): Promise<Result>;
+async function main(source: string | FileURL, meta?: Meta) {
   if (typeof source === "string" && !isURL(source)) {
-    return meta ? await fromFile(source, meta, opts) : void 0;
+    return meta ? await fromFile(source, meta) : void 0;
   } else {
     return fromURL(source);
   }
@@ -66,12 +65,12 @@ function fromURL(url: string | FileURL) {
   return mixer(_url);
 }
 
-async function fromFile(path: string, meta: Meta, opts?: Opts) {
+async function fromFile(path: string, meta: Meta) {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
 
   if (!file) return void 0;
-  return mixer(encode({ hash: hash(file), meta, ...opts }));
+  return mixer(encode({ hash: hash(file), ...meta }));
 }
 
 export const entanclature = Object.assign(main, { fromURL, fromFile });

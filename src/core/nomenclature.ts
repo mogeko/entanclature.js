@@ -5,8 +5,8 @@ import { isURL } from "../utils/is_url";
 import type { MIME, Mark } from "../models/grammar";
 import { isEmpty } from "../utils/is_empty";
 
-export function encode({ hash, meta, ...opts }: Decoded): FileURL {
-  if (opts.baseURL && isURL(opts.baseURL)) {
+export function encode({ hash, meta, ...rest }: Decoded): FileURL {
+  if (isURL(rest.baseURL)) {
     const _meta = meta.reduce((acc, m) => {
       const mark = mimeToMark(m.mime);
 
@@ -17,10 +17,10 @@ export function encode({ hash, meta, ...opts }: Decoded): FileURL {
     }, "");
     const name = [hash, _meta].join("#");
     const base64 = Buffer.from(name).toString("base64");
-    const base = new FileURL(opts.filedir ?? "/", opts.baseURL);
+    const base = new FileURL(rest.filedir, rest.baseURL);
     const url = new FileURL(base.filedir + base64, base);
 
-    if (opts.ext) {
+    if (rest.ext) {
       const ext = Object.values(GRAMMAR).find((m) => {
         return m.mime === meta[0].mime;
       })?.ext[0];
@@ -31,7 +31,7 @@ export function encode({ hash, meta, ...opts }: Decoded): FileURL {
 
     return url;
   } else {
-    throw new URIError(`We can't create URL from ${opts.baseURL}`);
+    throw new URIError(`We can't create URL from ${rest.baseURL}`);
   }
 }
 
@@ -102,24 +102,24 @@ type Quality = number | "+" | "-" | undefined;
 
 type Decoded = {
   hash: string;
-  meta: Meta;
-} & Opts;
+} & ExMeta;
 
-export type Meta = {
+type Meta = {
   mime: MIME;
   quality?: Quality;
 }[];
 
-export type Opts = {
-  baseURL?: string;
-  filedir?: string;
-  ext?: boolean;
+export type ExMeta = {
+  meta: Meta;
+  baseURL: string;
+  filedir: string;
+  ext: boolean;
 };
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
   const baseURL = "https://example.com";
-  const opts: Opts = { ext: true };
+  const opts = { ext: true, filedir: "/" };
   const meta: Meta = [
     { mime: "image/png", quality: 80 },
     { mime: "image/avif", quality: "+" },
@@ -131,17 +131,14 @@ if (import.meta.vitest) {
   it("encode", () => {
     const url = encode(decoded);
 
-    // expect(url.mime).toEqual("image/png");
+    expect(url.mime).toEqual("image/png");
     expect(url.toString()).toEqual(target);
   });
 
   it("decode", () => {
     const url = new FileURL(target);
 
-    expect(decode(url)).toEqual({
-      filedir: "/",
-      ...decoded,
-    });
+    expect(decode(url)).toEqual(decoded);
   });
 
   it("mimeToMark", () => {
