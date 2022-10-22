@@ -1,3 +1,6 @@
-**/dist
+**/coverage/*
+**/dist/*
+**/docs/api-reference/*
+**/types/*
 **/pnpm-lock.yaml
 **/pnpm-debug.log*
