@@ -22,6 +22,11 @@
     "dist/**/*",
     "types/**/*"
   ],
+  "keywords": [
+    "markdown",
+    "parser",
+    "image"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

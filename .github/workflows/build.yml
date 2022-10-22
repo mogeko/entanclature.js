@@ -34,8 +34,8 @@ jobs:
         run: pnpm publish --tag next
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish to NPM
+      - name: Publish to NPM (latest)
         if: startsWith(github.ref, 'refs/tags/v')
-        run: pnpm publish
+        run: pnpm publish --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
