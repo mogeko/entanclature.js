@@ -71,7 +71,7 @@ async function fromFile(path: string, meta: Meta, opts?: Opts) {
   const file = await fs.readFile(filepath);
 
   if (!file) return void 0;
-  return mixer(encode(hash(file), meta, opts));
+  return mixer(encode({ hash: hash(file), meta, ...opts }));
 }
 
 export const entanclature = Object.assign(main, { fromURL, fromFile });
