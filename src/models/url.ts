@@ -6,18 +6,18 @@ import type { Ext, MIME } from "./grammar";
 export class FileURL extends URL {
   private _extension?: Ext;
   private _mime?: MIME;
-  filedir?: string;
+  readonly filedir: string;
   filename?: string;
 
   constructor(url: string | FileURL, base?: string | FileURL) {
     super(url, base);
 
-    if (this.pathname.length !== 1) {
-      const _pathname = this.pathname;
-      const path = _pathname.endsWith("/") ? _pathname.slice(0, -1) : _pathname;
-      const breakpoint = path.lastIndexOf("/") + 1;
-      this.file = path.slice(breakpoint);
-      this.filedir = path.slice(0, breakpoint);
+    if (this.pathname.endsWith("/")) {
+      this.filedir = this.pathname;
+    } else {
+      const breakpoint = this.pathname.lastIndexOf("/") + 1;
+      this.file = this.pathname.slice(breakpoint);
+      this.filedir = this.pathname.slice(0, breakpoint);
     }
   }
 
@@ -68,13 +68,23 @@ export class FileURL extends URL {
   get mime() {
     return this._mime;
   }
+
+  /** @override */
+  toString(): string {
+    return [this.baseURL, this.filedir, this.file ?? ""].join("");
+  }
+
+  /** @override */
+  toJSON(): string {
+    return this.toString();
+  }
 }
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
 
   it("FileURL", () => {
-    const url = new FileURL("https://example.com/with/some/files.png/");
+    const url = new FileURL("https://example.com/with/some/files.png");
 
     expect(url.baseURL).toEqual("https://example.com");
     expect(url.filedir).toEqual("/with/some/");

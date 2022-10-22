@@ -8,5 +8,7 @@ export const GRAMMAR = {
 } as const;
 
 type ValueOf<T> = T[keyof T];
+
+export type Mark = keyof typeof GRAMMAR;
 export type MIME = ValueOf<typeof GRAMMAR>["mime"];
 export type Ext = ValueOf<typeof GRAMMAR>["ext"][number];

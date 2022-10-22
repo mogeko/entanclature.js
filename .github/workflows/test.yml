@@ -1,4 +1,4 @@
-name: Test
+name: Unit Test and Code Coverage
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 17
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -29,3 +29,7 @@ jobs:
         run: pnpm lint
       - name: Run test
         run: pnpm cov
+      - name: Upload report to CodeCov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: coverage

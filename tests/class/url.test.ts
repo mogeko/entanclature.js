@@ -8,7 +8,7 @@ describe("FileURL", () => {
     const url = new FileURL("https://example.com");
 
     expect(url.baseURL).toEqual("https://example.com");
-    expect(url.filedir).toBeUndefined();
+    expect(url.filedir).toEqual("/");
     expect(url.extension).toBeUndefined();
     expect(url.file).toBeUndefined();
     expect(url.filename).toBeUndefined();
