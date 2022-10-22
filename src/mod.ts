@@ -1,12 +1,13 @@
 import fs from "fs/promises";
 import sysPath from "path";
-import { encode } from "./core/nomenclature";
+import { decode } from "./core/nomenclature";
 import { mixer } from "./core/entanglement";
 import { FileURL } from "./models/url";
 import { hash } from "./utils/hash";
 import { isURL } from "./utils/is_url";
 
 import type { ExMeta as Meta } from "./core/nomenclature";
+import type { Result } from "./core/entanglement";
 
 /**
  * This may be the only function you need to follow!
@@ -62,7 +63,7 @@ async function main(source: string | FileURL, meta?: Meta) {
 function fromURL(url: string | FileURL) {
   const _url = typeof url === "string" ? new FileURL(url) : url;
 
-  return mixer(_url);
+  return mixer(decode(_url));
 }
 
 async function fromFile(path: string, meta: Meta) {
@@ -70,9 +71,7 @@ async function fromFile(path: string, meta: Meta) {
   const file = await fs.readFile(filepath);
 
   if (!file) return void 0;
-  return mixer(encode({ hash: hash(file), ...meta }));
+  return mixer({ hash: hash(file), ...meta });
 }
 
 export const entanclature = Object.assign(main, { fromURL, fromFile });
-
-type Result = ReturnType<typeof mixer>;
