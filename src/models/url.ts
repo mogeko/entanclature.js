@@ -71,7 +71,7 @@ export class FileURL extends URL {
 
   /** @override */
   toString(): string {
-    return [this.baseURL, this.filedir, this.file ?? ""].join();
+    return [this.baseURL, this.filedir, this.file ?? ""].join("");
   }
 
   /** @override */
