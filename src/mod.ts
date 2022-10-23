@@ -8,6 +8,7 @@ import { isURL } from "./utils/is_url";
 
 import type { ExMeta as Meta } from "./core/nomenclature";
 import type { Result } from "./core/entanglement";
+import { isEmpty } from "./utils/is_empty";
 
 /**
  * This may be the only function you need to follow!
@@ -70,7 +71,7 @@ async function fromFile(path: string, meta: Meta) {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
 
-  if (!file) return void 0;
+  if (isEmpty(file)) throw Error(`It seems that ${filepath} is not a good file.`);
   return mixer({ hash: hash(file), ...meta });
 }
 
