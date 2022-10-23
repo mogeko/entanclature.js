@@ -1,4 +1,4 @@
-import { GRAMMAR } from "./grammar";
+import { GRAMMAR_META } from "./grammar";
 import { isEmpty } from "../utils/is_empty";
 
 import type { Ext, MIME } from "./grammar";
@@ -7,7 +7,7 @@ export class FileURL extends URL {
   private _extension?: Ext;
   private _mime?: MIME;
   readonly filedir: string;
-  filename?: string;
+  readonly filename?: string;
 
   constructor(url: string | FileURL, base?: string | FileURL) {
     super(url, base);
@@ -16,8 +16,11 @@ export class FileURL extends URL {
       this.filedir = this.pathname;
     } else {
       const breakpoint = this.pathname.lastIndexOf("/") + 1;
-      this.file = this.pathname.slice(breakpoint);
+      const _file = this.pathname.slice(breakpoint);
       this.filedir = this.pathname.slice(0, breakpoint);
+      const [filename, ext] = _file.split(".");
+      this.extension = ext as Ext;
+      this.filename = filename;
     }
   }
 
@@ -26,23 +29,15 @@ export class FileURL extends URL {
   }
 
   set extension(ext: Ext | undefined) {
-    const meta = Object.values(GRAMMAR);
-
     if (!ext) return;
-    if (meta.flatMap((v) => v.ext).includes(ext)) {
+    if (GRAMMAR_META.flatMap((m) => m.ext).includes(ext)) {
       this._extension = ext;
-      this._mime = meta.find((v) => Array.from(v.ext).includes(ext))?.mime;
+      this._mime = GRAMMAR_META.find((m) => Array.from(m.ext).includes(ext))?.mime;
     } else throw URIError(`We don't support ${ext} files yet.`);
   }
 
   get extension() {
     return this._extension;
-  }
-
-  set file(file: string | undefined) {
-    const [filename, ext] = (file ?? "").split(".");
-    this.filename = filename;
-    this.extension = ext as Ext;
   }
 
   get file() {
@@ -54,13 +49,11 @@ export class FileURL extends URL {
   }
 
   set mime(mime: MIME | undefined) {
-    const meta = Object.values(GRAMMAR);
-
     if (!mime) return;
-    if (meta.map((v) => v.mime).includes(mime)) {
+    if (GRAMMAR_META.map((m) => m.mime).includes(mime)) {
       this._mime = mime;
       if (!isEmpty(this._extension)) {
-        this._extension = meta.find((v) => v.mime === mime)?.ext[0];
+        this._extension = GRAMMAR_META.find((m) => m.mime === mime)?.ext[0];
       }
     } else throw URIError(`We don't support ${mime} type yet.`);
   }

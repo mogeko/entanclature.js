@@ -7,6 +7,8 @@ export const GRAMMAR = {
   W: { mime: "image/webp", ext: ["webp"] },
 } as const;
 
+export const GRAMMAR_META = Object.values(GRAMMAR);
+
 type ValueOf<T> = T[keyof T];
 
 export type Mark = keyof typeof GRAMMAR;

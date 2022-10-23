@@ -1,4 +1,4 @@
-import { GRAMMAR } from "../models/grammar";
+import { GRAMMAR, GRAMMAR_META } from "../models/grammar";
 import { FileURL } from "../models/url";
 import { isURL } from "../utils/is_url";
 
@@ -21,7 +21,7 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
     const url = new FileURL(base.filedir + base64, base);
 
     if (rest.ext) {
-      const ext = Object.values(GRAMMAR).find((m) => {
+      const ext = GRAMMAR_META.find((m) => {
         return m.mime === meta[0].mime;
       })?.ext[0];
       url.extension = ext;
@@ -51,15 +51,6 @@ function mimeToMark(mime: MIME) {
   return target?.[0] as Mark | undefined;
 }
 
-function markToMIME(mark: Mark) {
-  const grammar = Object.entries(GRAMMAR);
-  const target = grammar.find(([m, _]) => m === mark);
-
-  if (target) {
-    return target[1].mime;
-  } else throw TypeError(); // TODO: Error Message
-}
-
 function isQualityLegal(quality: Quality) {
   if (!quality) return true;
   if (typeof quality === "number") {
@@ -84,12 +75,12 @@ function strToQuality(str: string): Quality {
 
 function match(str: string) {
   if (str.includes("#")) {
-    const [hash, _meta] = str.split("#");
-    const words = _meta.match(/([AGJPTW][\d\+\-]*)/g);
+    const [hash, sentence] = str.split("#");
+    const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
     if (words) {
-      const meta: Meta = words.map((m) => ({
-        mime: markToMIME(m.slice(0, 1) as Mark),
-        quality: strToQuality(m.slice(1)),
+      const meta: Meta = words.map((w) => ({
+        mime: GRAMMAR[w.slice(0, 1) as Mark].mime,
+        quality: strToQuality(w.slice(1)),
       }));
       return { hash, meta };
     }
@@ -144,15 +135,6 @@ if (import.meta.vitest) {
   it("mimeToMark", () => {
     expect(mimeToMark("image/avif")).toEqual("A");
     expect(mimeToMark("text/plain" as MIME)).toBeUndefined();
-  });
-
-  it("markToMIME", () => {
-    try {
-      expect(markToMIME("A")).toEqual("image/avif");
-      markToMIME("X" as Mark);
-    } catch (err: any) {
-      expect(err.name).toEqual("TypeError");
-    }
   });
 
   it("isQualityLegal", () => {
