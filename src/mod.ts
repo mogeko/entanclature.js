@@ -5,10 +5,10 @@ import { mixer } from "./core/entanglement";
 import { FileURL } from "./models/url";
 import { hash } from "./utils/hash";
 import { isURL } from "./utils/is_url";
+import { isEmpty } from "./utils/is_empty";
 
 import type { ExMeta as Meta } from "./core/nomenclature";
 import type { Result } from "./core/entanglement";
-import { isEmpty } from "./utils/is_empty";
 
 /**
  * This may be the only function you need to follow!

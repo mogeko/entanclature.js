@@ -1,9 +1,10 @@
 import { GRAMMAR, GRAMMAR_META } from "../models/grammar";
 import { FileURL } from "../models/url";
 import { isURL } from "../utils/is_url";
+import { isEmpty } from "../utils/is_empty";
+import { base64 } from "../utils/base64";
 
 import type { MIME, Mark } from "../models/grammar";
-import { isEmpty } from "../utils/is_empty";
 
 export function encode({ hash, meta, ...rest }: Decoded): FileURL {
   if (rest.baseURL && isURL(rest.baseURL)) {
@@ -16,9 +17,9 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
       return acc.concat(mark, String(m.quality));
     }, "");
     const name = [hash, _meta].join("#");
-    const base64 = Buffer.from(name).toString("base64");
+    const _base64 = base64.encode(name);
     const base = new FileURL(rest.filedir ?? "/", rest.baseURL);
-    const url = new FileURL(base.fileDir + base64, base);
+    const url = new FileURL(base.fileDir + _base64, base);
 
     if (rest.ext) {
       const ext = GRAMMAR_META.find((m) => {
@@ -37,8 +38,12 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
 
 export function decode(url: FileURL): Decoded {
   if (url.fileName) {
-    const str = Buffer.from(url.fileName, "base64").toString();
-    const opts = { baseURL: url.baseURL, filedir: url.fileDir, ext: !isEmpty(url.fileExt) };
+    const str = base64.decode(url.fileName);
+    const opts = {
+      baseURL: url.baseURL,
+      filedir: url.fileDir,
+      ext: !isEmpty(url.fileExt),
+    };
 
     return { ...match(str), ...opts };
   } else throw TypeError(); // TODO: Error Message
