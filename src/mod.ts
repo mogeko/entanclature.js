@@ -5,6 +5,7 @@ import { mixer } from "./core/entanglement";
 import { FileURL } from "./models/url";
 import { hash } from "./utils/hash";
 import { isURL } from "./utils/is_url";
+import { isEmpty } from "./utils/is_empty";
 
 import type { ExMeta as Meta } from "./core/nomenclature";
 import type { Result } from "./core/entanglement";
@@ -70,7 +71,7 @@ async function fromFile(path: string, meta: Meta) {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
 
-  if (!file) return void 0;
+  if (isEmpty(file)) throw Error(`It seems that ${filepath} is not a good file.`);
   return mixer({ hash: hash(file), ...meta });
 }
 

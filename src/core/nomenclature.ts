@@ -1,9 +1,10 @@
-import { GRAMMAR } from "../models/grammar";
+import { GRAMMAR, GRAMMAR_META } from "../models/grammar";
 import { FileURL } from "../models/url";
 import { isURL } from "../utils/is_url";
+import { isEmpty } from "../utils/is_empty";
+import { base64 } from "../utils/base64";
 
 import type { MIME, Mark } from "../models/grammar";
-import { isEmpty } from "../utils/is_empty";
 
 export function encode({ hash, meta, ...rest }: Decoded): FileURL {
   if (rest.baseURL && isURL(rest.baseURL)) {
@@ -16,17 +17,17 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
       return acc.concat(mark, String(m.quality));
     }, "");
     const name = [hash, _meta].join("#");
-    const base64 = Buffer.from(name).toString("base64");
+    const _base64 = base64.encode(name);
     const base = new FileURL(rest.filedir ?? "/", rest.baseURL);
-    const url = new FileURL(base.filedir + base64, base);
+    const url = new FileURL(base.fileDir + _base64, base);
 
-    if (rest.ext) {
-      const ext = Object.values(GRAMMAR).find((m) => {
+    if (rest.ext !== false) {
+      const ext = GRAMMAR_META.find((m) => {
         return m.mime === meta[0].mime;
       })?.ext[0];
-      url.extension = ext;
+      url.fileExt = ext;
     } else {
-      url.mime = meta[0].mime;
+      url.fileType = meta[0].mime;
     }
 
     return url;
@@ -36,11 +37,15 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
 }
 
 export function decode(url: FileURL): Decoded {
-  if (url.filename) {
-    const str = Buffer.from(url.filename, "base64").toString();
-    const opts = { baseURL: url.baseURL, filedir: url.filedir, ext: !isEmpty(url.extension) };
+  if (url.fileName) {
+    const str = base64.decode(url.fileName);
+    const rest = {
+      baseURL: url.baseURL,
+      filedir: url.fileDir,
+      ext: !isEmpty(url.fileExt),
+    };
 
-    return { ...match(str), ...opts };
+    return { ...match(str), ...rest };
   } else throw TypeError(); // TODO: Error Message
 }
 
@@ -49,15 +54,6 @@ function mimeToMark(mime: MIME) {
   const target = grammar.find(([_, m]) => m.mime === mime);
 
   return target?.[0] as Mark | undefined;
-}
-
-function markToMIME(mark: Mark) {
-  const grammar = Object.entries(GRAMMAR);
-  const target = grammar.find(([m, _]) => m === mark);
-
-  if (target) {
-    return target[1].mime;
-  } else throw TypeError(); // TODO: Error Message
 }
 
 function isQualityLegal(quality: Quality) {
@@ -84,12 +80,12 @@ function strToQuality(str: string): Quality {
 
 function match(str: string) {
   if (str.includes("#")) {
-    const [hash, _meta] = str.split("#");
-    const words = _meta.match(/([AGJPTW][\d\+\-]*)/g);
+    const [hash, sentence] = str.split("#");
+    const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
     if (words) {
-      const meta: Meta = words.map((m) => ({
-        mime: markToMIME(m.slice(0, 1) as Mark),
-        quality: strToQuality(m.slice(1)),
+      const meta: Meta = words.map((w) => ({
+        mime: GRAMMAR[w.slice(0, 1) as Mark].mime,
+        quality: strToQuality(w.slice(1)),
       }));
       return { hash, meta };
     }
@@ -113,6 +109,9 @@ export type ExMeta = {
   meta: Meta;
   baseURL: string;
   filedir?: string;
+} & Opts;
+
+type Opts = {
   ext?: boolean;
 };
 
@@ -131,7 +130,7 @@ if (import.meta.vitest) {
   it("encode", () => {
     const url = encode(decoded);
 
-    expect(url.mime).toEqual("image/png");
+    expect(url.fileType).toEqual("image/png");
     expect(url.toString()).toEqual(encodedURL);
   });
 
@@ -144,15 +143,6 @@ if (import.meta.vitest) {
   it("mimeToMark", () => {
     expect(mimeToMark("image/avif")).toEqual("A");
     expect(mimeToMark("text/plain" as MIME)).toBeUndefined();
-  });
-
-  it("markToMIME", () => {
-    try {
-      expect(markToMIME("A")).toEqual("image/avif");
-      markToMIME("X" as Mark);
-    } catch (err: any) {
-      expect(err.name).toEqual("TypeError");
-    }
   });
 
   it("isQualityLegal", () => {
