@@ -18,7 +18,7 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
     }, "");
     const name = [hash, _meta].join("#");
     const _base64 = base64.encode(name);
-    const base = new FileURL(rest.filedir ?? "/", rest.baseURL);
+    const base = new FileURL(rest.fileDir ?? "/", rest.baseURL);
     const url = new FileURL(base.fileDir + _base64, base);
 
     if (rest.ext !== false) {
@@ -41,7 +41,7 @@ export function decode(url: FileURL): Decoded {
     const str = base64.decode(url.fileName);
     const rest = {
       baseURL: url.baseURL,
-      filedir: url.fileDir,
+      fileDir: url.fileDir,
       ext: !isEmpty(url.fileExt),
     };
 
@@ -108,7 +108,7 @@ type Meta = {
 export type ExMeta = {
   meta: Meta;
   baseURL: string;
-  filedir?: string;
+  fileDir?: string;
 } & Opts;
 
 type Opts = {
@@ -118,7 +118,7 @@ type Opts = {
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
   const baseURL = "https://example.com";
-  const opts = { ext: true, filedir: "/" };
+  const opts = { ext: true, fileDir: "/" };
   const meta: Meta = [
     { mime: "image/png", quality: 80 },
     { mime: "image/avif", quality: "+" },

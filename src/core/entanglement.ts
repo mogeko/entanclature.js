@@ -1,4 +1,5 @@
 import { encode } from "./nomenclature";
+import { clone } from "../utils/clone";
 
 import type { Decoded } from "./nomenclature";
 
@@ -7,7 +8,7 @@ export function mixer(data: Decoded) {
 
   return {
     baseURL: data.baseURL,
-    filedir: data.filedir ?? "/",
+    filedir: data.fileDir ?? "/",
     files: urls.map((url) => url.fullFileName),
     urls,
   };
@@ -15,7 +16,7 @@ export function mixer(data: Decoded) {
 
 function enumerator(data: Decoded) {
   return data.meta.map((_, i) => {
-    const mirror = structuredClone(data);
+    const mirror = clone(data);
     const [focus] = mirror.meta.splice(i, 1);
     mirror.meta.sort((a, b) => {
       if (a.mime < b.mime) return -1;
