@@ -10,7 +10,7 @@ export function mixer(data: Decoded) {
     baseURL: data.baseURL,
     filedir: data.fileDir ?? "/",
     files: urls.map((url) => url.fullFileName),
-    urls,
+    urls: urls.map((url) => new URL(url)),
   };
 }
 
@@ -32,7 +32,6 @@ export type Result = ReturnType<typeof mixer>;
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
-  const { FileURL } = await import("../models/url");
   const baseURL = "https://example.com";
   const meta: Decoded["meta"] = [
     { mime: "image/png", quality: 80 },
@@ -52,7 +51,7 @@ if (import.meta.vitest) {
       "NDFCQTJCOSNXLUErUDgw.webp",
     ]);
     data.urls.map((url) => {
-      expect(new FileURL(url).toString()).toBeTypeOf("string");
+      expect(new URL(url).toString()).toBeTypeOf("string");
     });
   });
 

@@ -61,10 +61,8 @@ async function main(source: string | FileURL, meta?: Meta) {
   }
 }
 
-function fromURL(url: string | FileURL) {
-  const _url = typeof url === "string" ? new FileURL(url) : url;
-
-  return mixer(decode(_url));
+function fromURL(url: string | URL) {
+  return mixer(decode(new FileURL(url)));
 }
 
 async function fromFile(path: string, meta: Meta) {

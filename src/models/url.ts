@@ -9,7 +9,7 @@ export class FileURL extends URL {
   readonly fileDir: string;
   readonly fileName: string;
 
-  constructor(url: string | FileURL, base?: string | FileURL) {
+  constructor(url: string | URL, base?: string | URL) {
     super(url, base);
 
     const breakpoint = super.pathname.lastIndexOf("/") + 1;

@@ -18,8 +18,8 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
     }, "");
     const name = [hash, _meta].join("#");
     const _base64 = base64.encode(name);
-    const base = new FileURL(rest.fileDir ?? "/", rest.baseURL);
-    const url = new FileURL(base.fileDir + _base64, base);
+    const filePath = (rest.fileDir ?? "/") + _base64;
+    const url = new FileURL(filePath, rest.baseURL);
 
     if (rest.ext !== false) {
       const ext = GRAMMAR_META.find((m) => {
@@ -37,16 +37,14 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
 }
 
 export function decode(url: FileURL): Decoded {
-  if (url.fileName) {
-    const str = base64.decode(url.fileName);
-    const rest = {
-      baseURL: url.baseURL,
-      fileDir: url.fileDir,
-      ext: !isEmpty(url.fileExt),
-    };
+  const str = base64.decode(url.fileName);
+  const rest = {
+    baseURL: url.baseURL,
+    fileDir: url.fileDir,
+    ext: !isEmpty(url.fileExt),
+  };
 
-    return { ...match(str), ...rest };
-  } else throw TypeError(); // TODO: Error Message
+  return { ...match(str), ...rest };
 }
 
 function mimeToMark(mime: MIME) {
