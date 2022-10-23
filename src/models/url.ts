@@ -4,67 +4,67 @@ import { isEmpty } from "../utils/is_empty";
 import type { Ext, MIME } from "./grammar";
 
 export class FileURL extends URL {
-  private _extension?: Ext;
-  private _mime?: MIME;
-  readonly filedir: string;
-  readonly filename?: string;
+  private _fileExt?: Ext;
+  private _fileType?: MIME;
+  readonly fileDir: string;
+  readonly fileName: string;
 
   constructor(url: string | FileURL, base?: string | FileURL) {
     super(url, base);
 
-    if (this.pathname.endsWith("/")) {
-      this.filedir = this.pathname;
-    } else {
-      const breakpoint = this.pathname.lastIndexOf("/") + 1;
-      const _file = this.pathname.slice(breakpoint);
-      this.filedir = this.pathname.slice(0, breakpoint);
-      const [filename, ext] = _file.split(".");
-      this.extension = ext as Ext;
-      this.filename = filename;
-    }
+    const breakpoint = super.pathname.lastIndexOf("/") + 1;
+    const [filename, ext] = super.pathname.slice(breakpoint).split(".");
+    this.fileDir = super.pathname.slice(0, breakpoint);
+    this.fileExt = ext as Ext;
+    this.fileName = filename;
   }
 
+  /** @readonly */
   get baseURL() {
     return `${this.protocol}//${this.host}`;
   }
 
-  set extension(ext: Ext | undefined) {
+  set fileExt(ext: Ext | undefined) {
     if (!ext) return;
     if (GRAMMAR_META.flatMap((m) => m.ext).includes(ext)) {
-      this._extension = ext;
-      this._mime = GRAMMAR_META.find((m) => Array.from(m.ext).includes(ext))?.mime;
+      this._fileExt = ext;
+      this._fileType = GRAMMAR_META.find((m) => Array.from(m.ext).includes(ext))?.mime;
     } else throw URIError(`We don't support ${ext} files yet.`);
   }
 
-  get extension() {
-    return this._extension;
+  get fileExt() {
+    return this._fileExt;
   }
 
-  get file() {
-    if (this.extension) {
-      return [this.filename, this.extension].join(".");
-    } else {
-      return this.filename;
-    }
+  /** @readonly */
+  get fullFileName() {
+    if (!isEmpty(this.fileExt)) {
+      return [this.fileName, this.fileExt].join(".");
+    } else return this.fileName;
   }
 
-  set mime(mime: MIME | undefined) {
+  set fileType(mime: MIME | undefined) {
     if (!mime) return;
     if (GRAMMAR_META.map((m) => m.mime).includes(mime)) {
-      this._mime = mime;
-      if (!isEmpty(this._extension)) {
-        this._extension = GRAMMAR_META.find((m) => m.mime === mime)?.ext[0];
+      this._fileType = mime;
+      if (!isEmpty(this._fileExt)) {
+        this._fileExt = GRAMMAR_META.find((m) => m.mime === mime)?.ext[0];
       }
     } else throw URIError(`We don't support ${mime} type yet.`);
   }
 
-  get mime() {
-    return this._mime;
+  get fileType() {
+    return this._fileType;
+  }
+
+  /** @override @readonly */
+  get pathname() {
+    return [this.fileDir, this.fullFileName].join("");
   }
 
   /** @override */
   toString(): string {
-    return [this.baseURL, this.filedir, this.file ?? ""].join("");
+    return this.baseURL + this.pathname;
   }
 
   /** @override */
@@ -80,10 +80,10 @@ if (import.meta.vitest) {
     const url = new FileURL("https://example.com/with/some/files.png");
 
     expect(url.baseURL).toEqual("https://example.com");
-    expect(url.filedir).toEqual("/with/some/");
-    expect(url.file).toEqual("files.png");
-    expect(url.filename).toEqual("files");
-    expect(url.extension).toEqual("png");
-    expect(url.mime).toEqual("image/png");
+    expect(url.fileDir).toEqual("/with/some/");
+    expect(url.fullFileName).toEqual("files.png");
+    expect(url.fileName).toEqual("files");
+    expect(url.fileExt).toEqual("png");
+    expect(url.fileType).toEqual("image/png");
   });
 }

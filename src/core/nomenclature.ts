@@ -18,15 +18,15 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
     const name = [hash, _meta].join("#");
     const base64 = Buffer.from(name).toString("base64");
     const base = new FileURL(rest.filedir ?? "/", rest.baseURL);
-    const url = new FileURL(base.filedir + base64, base);
+    const url = new FileURL(base.fileDir + base64, base);
 
     if (rest.ext) {
       const ext = GRAMMAR_META.find((m) => {
         return m.mime === meta[0].mime;
       })?.ext[0];
-      url.extension = ext;
+      url.fileExt = ext;
     } else {
-      url.mime = meta[0].mime;
+      url.fileType = meta[0].mime;
     }
 
     return url;
@@ -36,9 +36,9 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
 }
 
 export function decode(url: FileURL): Decoded {
-  if (url.filename) {
-    const str = Buffer.from(url.filename, "base64").toString();
-    const opts = { baseURL: url.baseURL, filedir: url.filedir, ext: !isEmpty(url.extension) };
+  if (url.fileName) {
+    const str = Buffer.from(url.fileName, "base64").toString();
+    const opts = { baseURL: url.baseURL, filedir: url.fileDir, ext: !isEmpty(url.fileExt) };
 
     return { ...match(str), ...opts };
   } else throw TypeError(); // TODO: Error Message
@@ -122,7 +122,7 @@ if (import.meta.vitest) {
   it("encode", () => {
     const url = encode(decoded);
 
-    expect(url.mime).toEqual("image/png");
+    expect(url.fileType).toEqual("image/png");
     expect(url.toString()).toEqual(encodedURL);
   });
 

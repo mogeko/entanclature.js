@@ -8,7 +8,7 @@ export function mixer(data: Decoded) {
   return {
     baseURL: data.baseURL,
     filedir: data.filedir ?? "/",
-    files: urls.map((url) => url.file),
+    files: urls.map((url) => url.fullFileName),
     urls,
   };
 }
