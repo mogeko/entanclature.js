@@ -46,9 +46,9 @@ if (import.meta.vitest) {
     expect(data.baseURL).toEqual(baseURL);
     expect(data.filedir).toEqual("/");
     expect(data.files).toEqual([
-      "NDFCQTJCOSNQODBBK1ct",
-      "NDFCQTJCOSNBK1A4MFct",
-      "NDFCQTJCOSNXLUErUDgw",
+      "NDFCQTJCOSNQODBBK1ct.png",
+      "NDFCQTJCOSNBK1A4MFct.avif",
+      "NDFCQTJCOSNXLUErUDgw.webp",
     ]);
     data.urls.map((url) => {
       expect(new FileURL(url).toString()).toBeTypeOf("string");

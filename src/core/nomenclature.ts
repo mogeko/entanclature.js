@@ -21,7 +21,7 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
     const base = new FileURL(rest.filedir ?? "/", rest.baseURL);
     const url = new FileURL(base.fileDir + _base64, base);
 
-    if (rest.ext) {
+    if (rest.ext !== false) {
       const ext = GRAMMAR_META.find((m) => {
         return m.mime === meta[0].mime;
       })?.ext[0];
@@ -39,13 +39,13 @@ export function encode({ hash, meta, ...rest }: Decoded): FileURL {
 export function decode(url: FileURL): Decoded {
   if (url.fileName) {
     const str = base64.decode(url.fileName);
-    const opts = {
+    const rest = {
       baseURL: url.baseURL,
       filedir: url.fileDir,
       ext: !isEmpty(url.fileExt),
     };
 
-    return { ...match(str), ...opts };
+    return { ...match(str), ...rest };
   } else throw TypeError(); // TODO: Error Message
 }
 
@@ -109,6 +109,9 @@ export type ExMeta = {
   meta: Meta;
   baseURL: string;
   filedir?: string;
+} & Opts;
+
+type Opts = {
   ext?: boolean;
 };
 
