@@ -8,15 +8,13 @@ import type { MIME, Mark } from "../models/grammar";
 
 export function encode({ hash, meta, ...rest }: Decoded): FileURL {
   if (rest.baseURL && isURL(rest.baseURL)) {
-    const _meta = meta.reduce((acc, m) => {
+    const name = meta.reduce((acc, m) => {
       const mark = mimeToMark(m.mime);
+      const quality = qualityToStr(m.quality);
 
-      if (!isQualityLegal(m.quality)) return acc;
-      if (!mark) return acc;
-
-      return acc.concat(mark, String(m.quality));
-    }, "");
-    const name = [hash, _meta].join("#");
+      if (!mark || !quality) return acc;
+      return acc.concat(mark, quality);
+    }, hash + "#");
     const _base64 = base64.encode(name);
     const filePath = (rest.fileDir ?? "/") + _base64;
     const url = new FileURL(filePath, rest.baseURL);
@@ -54,14 +52,12 @@ function mimeToMark(mime: MIME) {
   return target?.[0] as Mark | undefined;
 }
 
-function isQualityLegal(quality: Quality) {
-  if (!quality) return true;
+function qualityToStr(quality: Quality) {
+  if (!quality) return "";
   if (typeof quality === "number") {
-    return quality >= 0 && quality <= 100;
-  }
-  if (["+", "-"].includes(quality)) return true;
-
-  return false;
+    if (quality >= 0 && quality <= 100) return String(quality);
+  } else if (["+", "-"].includes(quality)) return quality;
+  return void 0;
 }
 
 function strToQuality(str: string): Quality {
@@ -143,14 +139,14 @@ if (import.meta.vitest) {
     expect(mimeToMark("text/plain" as MIME)).toBeUndefined();
   });
 
-  it("isQualityLegal", () => {
-    expect(isQualityLegal("+")).toBeTruthy();
-    expect(isQualityLegal(90)).toBeTruthy();
-    expect(isQualityLegal(void 0)).toBeTruthy();
+  it("qualityToStr", () => {
+    expect(qualityToStr("+")).toEqual("+");
+    expect(qualityToStr(90)).toEqual("90");
+    expect(qualityToStr(void 0)).toEqual("");
 
-    expect(isQualityLegal("*" as Quality)).toBeFalsy();
-    expect(isQualityLegal(-10)).toBeFalsy();
-    expect(isQualityLegal(1000)).toBeFalsy();
+    expect(qualityToStr("*" as Quality)).toBeUndefined();
+    expect(qualityToStr(-10)).toBeUndefined();
+    expect(qualityToStr(1000)).toBeUndefined();
   });
 
   it("strToQuality", () => {
