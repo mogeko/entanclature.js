@@ -1,20 +1,23 @@
 import { encode } from "./nomenclature";
 import { clone } from "../utils/clone";
+import { GRAMMAR_META } from "../models/grammar";
 
-import type { Decoded } from "./nomenclature";
+import type { Data, FileInfo } from "./nomenclature";
 
-export function mixer(data: Decoded) {
-  const urls = enumerator(data).map(encode);
+export function mixer(data: Data, opts: Opts): Result {
+  const files = enumerator(data).map(encode).map(additionalExt(opts.ext));
 
   return {
-    baseURL: data.baseURL,
-    filedir: data.fileDir ?? "/",
-    files: urls.map((url) => url.fullFileName),
-    urls: urls.map((url) => new URL(url)),
+    baseURL: opts.baseURL,
+    filedir: opts.fileDir ?? "/",
+    urls: files.map((file) => {
+      return new URL(opts.fileDir + file.name, opts.baseURL);
+    }),
+    files,
   };
 }
 
-function enumerator(data: Decoded) {
+function enumerator(data: Data) {
   return data.meta.map((_, i) => {
     const mirror = clone(data);
     const [focus] = mirror.meta.splice(i, 1);
@@ -28,38 +31,62 @@ function enumerator(data: Decoded) {
   });
 }
 
-export type Result = ReturnType<typeof mixer>;
+function additionalExt(hasExt?: boolean) {
+  return (file: FileInfo) => {
+    if (hasExt !== false) {
+      const ext = GRAMMAR_META.find((m) => {
+        return m.mime === file.type;
+      })?.ext[0];
+      const name = [file.name, ext ?? ""].join(".");
+      return { name, type: file.type };
+    } else {
+      return file;
+    }
+  };
+}
+
+export type Result = {
+  baseURL: string;
+  filedir: string;
+  files: FileInfo[];
+  urls: URL[];
+};
+export type Opts = {
+  baseURL: string;
+  fileDir: string;
+  ext?: boolean;
+};
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
   const baseURL = "https://example.com";
-  const meta: Decoded["meta"] = [
+  const fileDir = "/";
+  const meta: Data["meta"] = [
     { mime: "image/png", quality: 80 },
     { mime: "image/avif", quality: "+" },
     { mime: "image/webp", quality: "-" },
   ];
-  const decoded: Decoded = { hash: "41BA2B9", meta, baseURL };
+  const data: Data = { hash: "41BA2B9", meta };
 
   it("mixer", () => {
-    const data = mixer(decoded);
+    const result = mixer(data, { baseURL, fileDir });
 
-    expect(data.baseURL).toEqual(baseURL);
-    expect(data.filedir).toEqual("/");
-    expect(data.files).toEqual([
-      "NDFCQTJCOSNQODBBK1ct.png",
-      "NDFCQTJCOSNBK1A4MFct.avif",
-      "NDFCQTJCOSNXLUErUDgw.webp",
+    expect(result.baseURL).toEqual(baseURL);
+    expect(result.filedir).toEqual("/");
+    expect(result.files).toEqual([
+      { name: "NDFCQTJCOSNQODBBK1ct.png", type: "image/png" },
+      { name: "NDFCQTJCOSNBK1A4MFct.avif", type: "image/avif" },
+      { name: "NDFCQTJCOSNXLUErUDgw.webp", type: "image/webp" },
     ]);
-    data.urls.map((url) => {
+    result.urls.map((url) => {
       expect(new URL(url).toString()).toBeTypeOf("string");
     });
   });
 
   it("enumerator", () => {
-    expect(enumerator(decoded)).toEqual([
+    expect(enumerator(data)).toEqual([
       {
         hash: "41BA2B9",
-        baseURL: "https://example.com",
         meta: [
           { mime: "image/png", quality: 80 },
           { mime: "image/avif", quality: "+" },
@@ -68,7 +95,6 @@ if (import.meta.vitest) {
       },
       {
         hash: "41BA2B9",
-        baseURL: "https://example.com",
         meta: [
           { mime: "image/avif", quality: "+" },
           { mime: "image/png", quality: 80 },
@@ -77,7 +103,6 @@ if (import.meta.vitest) {
       },
       {
         hash: "41BA2B9",
-        baseURL: "https://example.com",
         meta: [
           { mime: "image/webp", quality: "-" },
           { mime: "image/avif", quality: "+" },
@@ -85,5 +110,9 @@ if (import.meta.vitest) {
         ],
       },
     ]);
+  });
+
+  it.skip("additionalExt", () => {
+    // TODO: Increase testing to additional Ext
   });
 }

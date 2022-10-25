@@ -1,48 +1,40 @@
-import { GRAMMAR, GRAMMAR_META } from "../models/grammar";
-import { FileURL } from "../models/url";
-import { isURL } from "../utils/is_url";
+import { GRAMMAR } from "../models/grammar";
 import { isEmpty } from "../utils/is_empty";
 import { base64 } from "../utils/base64";
 
 import type { MIME, Mark } from "../models/grammar";
 
-export function encode({ hash, meta, ...rest }: Decoded): FileURL {
-  if (rest.baseURL && isURL(rest.baseURL)) {
-    const name = meta.reduce((acc, m) => {
-      const mark = mimeToMark(m.mime);
-      const quality = qualityToStr(m.quality);
+export function encode({ hash, meta }: Data): FileInfo {
+  const init = { text: hash + "#", type: null as unknown as MIME };
+  const { text, type } = meta.reduce((acc, m) => {
+    const mark = mimeToMark(m.mime);
+    const quality = qualityToStr(m.quality);
 
-      if (!mark || !quality) return acc;
-      return acc.concat(mark, quality);
-    }, hash + "#");
-    const _base64 = base64.encode(name);
-    const filePath = (rest.fileDir ?? "/") + _base64;
-    const url = new FileURL(filePath, rest.baseURL);
+    if (!mark || !quality) return acc;
+    return {
+      text: acc.text.concat(mark, quality),
+      type: acc.type ?? m.mime,
+    };
+  }, init);
 
-    if (rest.ext !== false) {
-      const ext = GRAMMAR_META.find((m) => {
-        return m.mime === meta[0].mime;
-      })?.ext[0];
-      url.fileExt = ext;
-    } else {
-      url.fileType = meta[0].mime;
-    }
-
-    return url;
-  } else {
-    throw new URIError(`We can't create URL from ${rest.baseURL}`);
-  }
+  return { name: base64.encode(text), type };
 }
 
-export function decode(url: FileURL): Decoded {
-  const str = base64.decode(url.fileName);
-  const rest = {
-    baseURL: url.baseURL,
-    fileDir: url.fileDir,
-    ext: !isEmpty(url.fileExt),
-  };
+export function decode(file: FileInfo): Data {
+  const text = base64.decode(file.name);
+  if (text.includes("#")) {
+    const [hash, sentence] = text.split("#");
+    const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
+    if (words) {
+      const meta: Meta = words.map((w) => ({
+        mime: GRAMMAR[w.slice(0, 1) as Mark].mime,
+        quality: strToQuality(w.slice(1)),
+      }));
+      return { hash, meta };
+    }
+  }
 
-  return { ...match(str), ...rest };
+  throw TypeError(); // TODO: Error Message
 }
 
 function mimeToMark(mime: MIME) {
@@ -72,66 +64,46 @@ function strToQuality(str: string): Quality {
   }
 }
 
-function match(str: string) {
-  if (str.includes("#")) {
-    const [hash, sentence] = str.split("#");
-    const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
-    if (words) {
-      const meta: Meta = words.map((w) => ({
-        mime: GRAMMAR[w.slice(0, 1) as Mark].mime,
-        quality: strToQuality(w.slice(1)),
-      }));
-      return { hash, meta };
-    }
-  }
-
-  throw TypeError(); // TODO: Error Message
-}
-
 type Quality = number | "+" | "-" | undefined;
 
-export type Decoded = {
-  hash: string;
-} & ExMeta;
+export type FileInfo = {
+  name: string;
+  type: MIME;
+};
 
-type Meta = {
+export type Data = {
+  hash: string;
+  meta: Meta;
+};
+
+export type Meta = {
   mime: MIME;
   quality?: Quality;
 }[];
 
-export type ExMeta = {
-  meta: Meta;
-  baseURL: string;
-  fileDir?: string;
-} & Opts;
-
-type Opts = {
-  ext?: boolean;
-};
-
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
-  const baseURL = "https://example.com";
-  const opts = { ext: true, fileDir: "/" };
   const meta: Meta = [
     { mime: "image/png", quality: 80 },
     { mime: "image/avif", quality: "+" },
     { mime: "image/webp", quality: "-" },
   ];
-  const decoded = { hash: "41BA2B9", meta, baseURL, ...opts };
-  const encodedURL = "https://example.com/NDFCQTJCOSNQODBBK1ct.png";
+  const data = { hash: "41BA2B9", meta };
 
   it("encode", () => {
-    const url = encode(decoded);
+    const file = encode(data);
 
-    expect(url.fileType).toEqual("image/png");
-    expect(url.toString()).toEqual(encodedURL);
+    expect(file.name).toEqual("NDFCQTJCOSNQODBBK1ct");
+    expect(file.type).toEqual("image/png");
   });
 
   it("decode", () => {
-    const url = new FileURL(encodedURL);
+    const file: FileInfo = {
+      name: "NDFCQTJCOSNQODBBK1ct",
+      type: "image/png",
+    };
 
-    expect(decode(url)).toEqual(decoded);
+    expect(decode(file)).toEqual(data);
   });
 
   it("mimeToMark", () => {

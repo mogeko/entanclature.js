@@ -1,14 +1,15 @@
 import fs from "fs/promises";
 import sysPath from "path";
 import { decode } from "./core/nomenclature";
-import { mixer } from "./core/entanglement";
+import { mixer, Opts } from "./core/entanglement";
 import { FileURL } from "./models/url";
 import { hash } from "./utils/hash";
 import { isURL } from "./utils/is_url";
 import { isEmpty } from "./utils/is_empty";
 
-import type { ExMeta as Meta } from "./core/nomenclature";
+import type { Meta } from "./core/nomenclature";
 import type { Result } from "./core/entanglement";
+import { Ext, GRAMMAR_META } from "./models/grammar";
 
 /**
  * This may be the only function you need to follow!
@@ -52,25 +53,38 @@ async function main(url: string | FileURL): Promise<Result>;
  * @param path - a string of file paths
  * @param meta - How should we handle this file?
  * */
-async function main(path: string, meta: Meta): Promise<Result>;
-async function main(source: string | FileURL, meta?: Meta) {
+async function main(path: string, meta: Meta, opts?: Opts): Promise<Result>;
+async function main(source: string | FileURL, meta?: Meta, opts?: Opts) {
   if (typeof source === "string" && !isURL(source)) {
-    return meta ? await fromFile(source, meta) : void 0;
+    return meta && opts ? await fromFile(source, meta, opts) : void 0;
   } else {
     return fromURL(source);
   }
 }
 
 function fromURL(url: string | URL) {
-  return mixer(decode(new FileURL(url)));
+  const _url = new URL(url);
+  const breakpoint = _url.pathname.lastIndexOf("/") + 1;
+  const [name, ext] = _url.pathname.slice(breakpoint).split(".");
+  const mime = GRAMMAR_META.find((m) => Array.from(m.ext).includes(ext as Ext))?.mime;
+  const opts = {
+    baseURL: `${_url.protocol}//${_url.host}`,
+    fileDir: _url.pathname.slice(0, breakpoint),
+  };
+
+  if (mime) {
+    return mixer(decode({ name, type: mime }), opts);
+  }
+
+  throw TypeError();
 }
 
-async function fromFile(path: string, meta: Meta) {
+async function fromFile(path: string, meta: Meta, opts: Opts) {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
 
   if (isEmpty(file)) throw Error(`It seems that ${filepath} is not a good file.`);
-  return mixer({ hash: hash(file), ...meta });
+  return mixer({ hash: hash(file), meta }, opts);
 }
 
 export const entanclature = Object.assign(main, { fromURL, fromFile });
