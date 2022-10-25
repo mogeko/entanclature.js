@@ -9,7 +9,7 @@ describe("decode", () => {
       decode({ name: "", type: "image/avif" });
     } catch (err: any) {
       expect(err.name).toEqual("TypeError");
-      expect(err.message).toEqual("We can't process (base64: )!");
+      expect(err.message).toEqual("We can't process  (base64: )!");
     }
   });
 
@@ -24,7 +24,7 @@ describe("decode", () => {
     } catch (err: any) {
       expect(err.name).toEqual("TypeError");
       expect(err.message).toEqual(
-        "We can't process IT_IS_A_WRONG_TEXT(base64: SVRfSVNfQV9XUk9OR19URVhU)!"
+        "We can't process IT_IS_A_WRONG_TEXT (base64: SVRfSVNfQV9XUk9OR19URVhU)!"
       );
     }
   });

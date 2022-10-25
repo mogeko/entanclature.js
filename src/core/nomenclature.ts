@@ -34,7 +34,7 @@ export function decode(file: FileInfo): Data {
     }
   }
 
-  throw TypeError(`We can't process ${text}(base64: ${file.name})!`); // TODO: Error Message
+  throw TypeError(`We can't process ${text} (base64: ${file.name})!`);
 }
 
 function getStrFromQuality(quality: Quality) {

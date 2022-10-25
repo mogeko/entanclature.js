@@ -75,9 +75,9 @@ function fromURL(url: string | URL) {
 
   if (type && opts.ext) {
     return mixer(decode({ name, type }), opts);
-  }
-
-  throw Error();
+  } else if (!opts.ext) {
+    throw Error("The URL should end with a suffix.");
+  } else throw Error(`We cannot convert this URL (${url})`);
 }
 
 async function fromFile(path: string, meta: Meta, opts: Opts) {
