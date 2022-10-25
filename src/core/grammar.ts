@@ -17,7 +17,9 @@ export function getMarksFromType(type: Type) {
 }
 
 export function getTypeFromMark(mark: Mark) {
-  return GRAMMAR[mark].type;
+  if (Object.keys(GRAMMAR).includes(mark)) {
+    return GRAMMAR[mark].type;
+  } else throw TypeError(`${mark} looks not a good type mark!`);
 }
 
 export function getTypeFromExt(ext: Ext) {
@@ -35,3 +37,32 @@ type ValueOf<T> = T[keyof T];
 export type Mark = keyof typeof GRAMMAR;
 export type Type = ValueOf<typeof GRAMMAR>["type"];
 export type Ext = ValueOf<typeof GRAMMAR>["ext"][number];
+
+if (import.meta.vitest) {
+  const { it, expect } = import.meta.vitest;
+
+  it("getMarksFromType", () => {
+    expect(getMarksFromType("image/gif")).toEqual("G");
+    expect(getMarksFromType("text/plain" as Type)).toBeUndefined();
+  });
+
+  it("getTypeFromMark", () => {
+    expect(getTypeFromMark("A")).toEqual("image/avif");
+    try {
+      getTypeFromMark("X" as Mark);
+    } catch (err: any) {
+      expect(err.name).toEqual("TypeError");
+      expect(err.message).toEqual("X looks not a good type mark!");
+    }
+  });
+
+  it("getTypeFromExt", () => {
+    expect(getTypeFromExt("jpg")).toEqual("image/jpeg");
+    expect(getTypeFromExt("txt" as Ext)).toBeUndefined();
+  });
+
+  it("getExtFromType", () => {
+    expect(getExtFromType("image/tiff")).toEqual("tiff");
+    expect(getExtFromType("text/plain" as Type)).toBeUndefined();
+  });
+}
