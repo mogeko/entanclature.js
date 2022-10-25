@@ -112,7 +112,14 @@ if (import.meta.vitest) {
     ]);
   });
 
-  it.skip("additionalExt", () => {
-    // TODO: Increase testing to additional Ext
+  it("additionalExt", () => {
+    const file: FileInfo = {
+      type: "image/png",
+      name: "EXAMPLE_FILE",
+    };
+
+    expect(additionalExt(true)(file).name).toEqual("EXAMPLE_FILE.png");
+    expect(additionalExt(false)(file).name).toEqual("EXAMPLE_FILE");
+    expect(additionalExt()(file).name).toEqual("EXAMPLE_FILE.png");
   });
 }
