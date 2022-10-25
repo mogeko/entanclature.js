@@ -77,8 +77,9 @@ if (import.meta.vitest) {
       { name: "NDFCQTJCOSNBK1A4MFct.avif", type: "image/avif" },
       { name: "NDFCQTJCOSNXLUErUDgw.webp", type: "image/webp" },
     ]);
-    result.urls.map((url) => {
-      expect(new URL(url).toString()).toBeTypeOf("string");
+    result.urls.map((url, i) => {
+      const _url = new URL(url);
+      expect(_url.pathname).toEqual(`${result.filedir}${result.files[i].name}`);
     });
   });
 
