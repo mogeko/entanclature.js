@@ -2,13 +2,14 @@ import fs from "fs/promises";
 import sysPath from "path";
 import { decode } from "./core/nomenclature";
 import { mixer } from "./core/entanglement";
-import { FileURL } from "./models/url";
+import { getTypeFromExt } from "./core/grammar";
 import { hash } from "./utils/hash";
 import { isURL } from "./utils/is_url";
 import { isEmpty } from "./utils/is_empty";
 
-import type { ExMeta as Meta } from "./core/nomenclature";
-import type { Result } from "./core/entanglement";
+import type { Opts, Result } from "./core/entanglement";
+import type { Data } from "./core/nomenclature";
+import type { Ext } from "./core/grammar";
 
 /**
  * This may be the only function you need to follow!
@@ -45,34 +46,48 @@ import type { Result } from "./core/entanglement";
  * const resultFromFile = await entanclature.fromFile("/path/of/the/file.png", meta, opt)
  * ```
  */
-async function main(url: string | FileURL): Promise<Result>;
+async function main(url: string | URL): Promise<Result>;
 /**
  * If the string of a **file path** is passed, `meta` will be a must
  *
  * @param path - a string of file paths
  * @param meta - How should we handle this file?
  * */
-async function main(path: string, meta: Meta): Promise<Result>;
-async function main(source: string | FileURL, meta?: Meta) {
+async function main(path: string, meta: Meta, opts: Opts): Promise<Result>;
+async function main(source: string | URL, meta?: Meta, opts?: Opts) {
   if (typeof source === "string" && !isURL(source)) {
-    return meta ? await fromFile(source, meta) : void 0;
+    return meta && opts ? await fromFile(source, meta, opts) : void 0;
   } else {
     return fromURL(source);
   }
 }
 
-function fromURL(url: string | FileURL) {
-  const _url = typeof url === "string" ? new FileURL(url) : url;
+function fromURL(url: string | URL) {
+  const _url = new URL(url);
+  const breakpoint = _url.pathname.lastIndexOf("/") + 1;
+  const [name, ext] = _url.pathname.slice(breakpoint).split(".");
+  const type = getTypeFromExt(ext as Ext);
+  const opts: Opts = {
+    baseURL: `${_url.protocol}//${_url.host}`,
+    fileDir: _url.pathname.slice(0, breakpoint),
+    ext: !isEmpty(ext),
+  };
 
-  return mixer(decode(_url));
+  if (type && opts.ext) {
+    return mixer(decode({ name, type }), opts);
+  } else if (!opts.ext) {
+    throw Error("The URL should end with a suffix.");
+  } else throw Error(`We cannot convert this URL (${url})`);
 }
 
-async function fromFile(path: string, meta: Meta) {
+async function fromFile(path: string, meta: Meta, opts: Opts) {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
 
   if (isEmpty(file)) throw Error(`It seems that ${filepath} is not a good file.`);
-  return mixer({ hash: hash(file), ...meta });
+  return mixer({ hash: hash(file), meta }, opts);
 }
 
 export const entanclature = Object.assign(main, { fromURL, fromFile });
+
+type Meta = Data["meta"];

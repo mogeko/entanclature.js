@@ -25,19 +25,15 @@ export default defineConfig({
           text: "CORE",
           items: [
             { text: "entanglement.ts", link: "/api-reference/modules/core_entanglement" },
+            { text: "grammar.ts", link: "/api-reference/modules/core_grammar" },
             { text: "nomenclature.ts", link: "/api-reference/modules/core_nomenclature" },
-          ],
-        },
-        {
-          text: "MODELS",
-          items: [
-            { text: "grammar.ts", link: "/api-reference/modules/models_grammar" },
-            { text: "url.ts", link: "/api-reference/modules/models_url" },
           ],
         },
         {
           text: "UTILS",
           items: [
+            { text: "base64.ts", link: "/api-reference/modules/base64" },
+            { text: "clone.ts", link: "/api-reference/modules/clone" },
             { text: "hash.ts", link: "/api-reference/modules/utils_hash" },
             { text: "is_empty.ts", link: "/api-reference/modules/utils_is_empty" },
             { text: "is_url.ts", link: "/api-reference/modules/utils_is_url" },

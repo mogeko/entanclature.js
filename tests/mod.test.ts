@@ -2,11 +2,11 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { entanclature } from "../src/mod";
 import mock from "mock-fs";
 
-import type { ExMeta } from "../src/core/nomenclature";
+import type { Data } from "../src/core/nomenclature";
 
 describe("entanclature", () => {
   beforeAll(() => {
-    mock({ "path/image.png": Buffer.from([8, 6, 7, 5, 3, 0, 9]) });
+    mock({ "./path/image.png": Buffer.from([8, 6, 7, 5, 3, 0, 9]) });
   });
 
   afterAll(() => {
@@ -14,24 +14,23 @@ describe("entanclature", () => {
   });
 
   it("Entanglement name with a file path", async () => {
-    const meta: ExMeta = {
+    const meta: Data["meta"] = [
+      { type: "image/png", quality: 80 },
+      { type: "image/avif", quality: "+" },
+      { type: "image/webp", quality: "-" },
+    ];
+    const opts = {
       baseURL: "https://example.com",
       fileDir: "/path/",
-      meta: [
-        { mime: "image/png", quality: 80 },
-        { mime: "image/avif", quality: "+" },
-        { mime: "image/webp", quality: "-" },
-      ],
-      ext: true,
     };
-    const result = await entanclature("path/image.png", meta);
+    const result = await entanclature("./path/image.png", meta, opts);
 
-    expect(result.baseURL).toEqual(meta.baseURL);
-    expect(result.filedir).toEqual(meta.fileDir);
+    expect(result.baseURL).toEqual(opts.baseURL);
+    expect(result.filedir).toEqual(opts.fileDir);
     expect(result.files).toEqual([
-      "OTk0QTc5OSNQODBBK1ct.png",
-      "OTk0QTc5OSNBK1A4MFct.avif",
-      "OTk0QTc5OSNXLUErUDgw.webp",
+      { name: "OTk0QTc5OSNQODBBK1ct.png", type: "image/png" },
+      { name: "OTk0QTc5OSNBK1A4MFct.avif", type: "image/avif" },
+      { name: "OTk0QTc5OSNXLUErUDgw.webp", type: "image/webp" },
     ]);
   });
 
@@ -41,9 +40,9 @@ describe("entanclature", () => {
     expect(result.baseURL).toEqual("https://example.com");
     expect(result.filedir).toEqual("/path/");
     expect(result.files).toEqual([
-      "OTk0QTc5OSNQODBBK1ct.png",
-      "OTk0QTc5OSNBK1A4MFct.avif",
-      "OTk0QTc5OSNXLUErUDgw.webp",
+      { name: "OTk0QTc5OSNQODBBK1ct.png", type: "image/png" },
+      { name: "OTk0QTc5OSNBK1A4MFct.avif", type: "image/avif" },
+      { name: "OTk0QTc5OSNXLUErUDgw.webp", type: "image/webp" },
     ]);
   });
 
@@ -53,9 +52,9 @@ describe("entanclature", () => {
     expect(result.baseURL).toEqual("https://example.com");
     expect(result.filedir).toEqual("/path/");
     expect(result.files).toEqual([
-      "OTk0QTc5OSNQODBBK1ct.png",
-      "OTk0QTc5OSNBK1A4MFct.avif",
-      "OTk0QTc5OSNXLUErUDgw.webp",
+      { name: "OTk0QTc5OSNQODBBK1ct.png", type: "image/png" },
+      { name: "OTk0QTc5OSNBK1A4MFct.avif", type: "image/avif" },
+      { name: "OTk0QTc5OSNXLUErUDgw.webp", type: "image/webp" },
     ]);
   });
 });

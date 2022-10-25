@@ -1,72 +1,51 @@
-import { GRAMMAR, GRAMMAR_META } from "../models/grammar";
-import { FileURL } from "../models/url";
-import { isURL } from "../utils/is_url";
+import { getTypeFromMark, getMarksFromType } from "./grammar";
 import { isEmpty } from "../utils/is_empty";
 import { base64 } from "../utils/base64";
 
-import type { MIME, Mark } from "../models/grammar";
+import type { Type, Mark } from "./grammar";
 
-export function encode({ hash, meta, ...rest }: Decoded): FileURL {
-  if (rest.baseURL && isURL(rest.baseURL)) {
-    const _meta = meta.reduce((acc, m) => {
-      const mark = mimeToMark(m.mime);
+export function encode({ hash, meta }: Data): FileInfo {
+  const init = { text: hash + "#", type: null as unknown as Type };
+  const { text, type } = meta.reduce((acc, m) => {
+    const mark = getMarksFromType(m.type);
+    const quality = getStrFromQuality(m.quality);
 
-      if (!isQualityLegal(m.quality)) return acc;
-      if (!mark) return acc;
-
-      return acc.concat(mark, String(m.quality));
-    }, "");
-    const name = [hash, _meta].join("#");
-    const _base64 = base64.encode(name);
-    const base = new FileURL(rest.fileDir ?? "/", rest.baseURL);
-    const url = new FileURL(base.fileDir + _base64, base);
-
-    if (rest.ext !== false) {
-      const ext = GRAMMAR_META.find((m) => {
-        return m.mime === meta[0].mime;
-      })?.ext[0];
-      url.fileExt = ext;
-    } else {
-      url.fileType = meta[0].mime;
-    }
-
-    return url;
-  } else {
-    throw new URIError(`We can't create URL from ${rest.baseURL}`);
-  }
-}
-
-export function decode(url: FileURL): Decoded {
-  if (url.fileName) {
-    const str = base64.decode(url.fileName);
-    const rest = {
-      baseURL: url.baseURL,
-      fileDir: url.fileDir,
-      ext: !isEmpty(url.fileExt),
+    if (!mark || !quality) return acc;
+    return {
+      text: acc.text.concat(mark, quality),
+      type: acc.type ?? m.type,
     };
+  }, init);
 
-    return { ...match(str), ...rest };
-  } else throw TypeError(); // TODO: Error Message
+  return { name: base64.encode(text), type };
 }
 
-function mimeToMark(mime: MIME) {
-  const grammar = Object.entries(GRAMMAR);
-  const target = grammar.find(([_, m]) => m.mime === mime);
-
-  return target?.[0] as Mark | undefined;
-}
-
-function isQualityLegal(quality: Quality) {
-  if (!quality) return true;
-  if (typeof quality === "number") {
-    return quality >= 0 && quality <= 100;
+export function decode(file: FileInfo): Data {
+  const text = base64.decode(file.name);
+  if (text.includes("#")) {
+    const [hash, sentence] = text.split("#");
+    const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
+    if (words) {
+      const meta: Data["meta"] = words.map((w) => ({
+        type: getTypeFromMark(w.slice(0, 1) as Mark),
+        quality: getQualityFromStr(w.slice(1)),
+      }));
+      return { hash, meta };
+    }
   }
-  if (["+", "-"].includes(quality)) return true;
 
-  return false;
+  throw TypeError(`We can't process ${text} (base64: ${file.name})!`);
 }
 
-function strToQuality(str: string): Quality {
+function getStrFromQuality(quality: Quality) {
+  if (!quality) return "";
+  if (typeof quality === "number") {
+    if (quality >= 0 && quality <= 100) return String(quality);
+  } else if (["+", "-"].includes(quality)) return quality;
+  return void 0;
+}
+
+function getQualityFromStr(str: string): Quality {
   if (isEmpty(str)) return void 0;
   if (["+", "-"].includes(str)) {
     return str as "+" | "-";
@@ -74,95 +53,69 @@ function strToQuality(str: string): Quality {
     const num = parseInt(str);
     if (!isNaN(num) && num >= 0 && num <= 100) {
       return num;
-    } else throw TypeError(); // TODO: Error Message
+    } else throw TypeError(`${str} looks not a good quality mark!`);
   }
-}
-
-function match(str: string) {
-  if (str.includes("#")) {
-    const [hash, sentence] = str.split("#");
-    const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
-    if (words) {
-      const meta: Meta = words.map((w) => ({
-        mime: GRAMMAR[w.slice(0, 1) as Mark].mime,
-        quality: strToQuality(w.slice(1)),
-      }));
-      return { hash, meta };
-    }
-  }
-
-  throw TypeError(); // TODO: Error Message
 }
 
 type Quality = number | "+" | "-" | undefined;
 
-export type Decoded = {
+export type FileInfo = {
+  name: string;
+  type: Type;
+};
+
+export type Data = {
   hash: string;
-} & ExMeta;
-
-type Meta = {
-  mime: MIME;
-  quality?: Quality;
-}[];
-
-export type ExMeta = {
-  meta: Meta;
-  baseURL: string;
-  fileDir?: string;
-} & Opts;
-
-type Opts = {
-  ext?: boolean;
+  meta: {
+    type: Type;
+    quality?: Quality;
+  }[];
 };
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
-  const baseURL = "https://example.com";
-  const opts = { ext: true, fileDir: "/" };
-  const meta: Meta = [
-    { mime: "image/png", quality: 80 },
-    { mime: "image/avif", quality: "+" },
-    { mime: "image/webp", quality: "-" },
+  const meta: Data["meta"] = [
+    { type: "image/png", quality: 80 },
+    { type: "image/avif", quality: "+" },
+    { type: "image/webp", quality: "-" },
   ];
-  const decoded = { hash: "41BA2B9", meta, baseURL, ...opts };
-  const encodedURL = "https://example.com/NDFCQTJCOSNQODBBK1ct.png";
+  const data = { hash: "41BA2B9", meta };
 
   it("encode", () => {
-    const url = encode(decoded);
+    const file = encode(data);
 
-    expect(url.fileType).toEqual("image/png");
-    expect(url.toString()).toEqual(encodedURL);
+    expect(file.name).toEqual("NDFCQTJCOSNQODBBK1ct");
+    expect(file.type).toEqual("image/png");
   });
 
   it("decode", () => {
-    const url = new FileURL(encodedURL);
+    const file: FileInfo = {
+      name: "NDFCQTJCOSNQODBBK1ct",
+      type: "image/png",
+    };
 
-    expect(decode(url)).toEqual(decoded);
+    expect(decode(file)).toEqual(data);
   });
 
-  it("mimeToMark", () => {
-    expect(mimeToMark("image/avif")).toEqual("A");
-    expect(mimeToMark("text/plain" as MIME)).toBeUndefined();
+  it("getStrFromQuality", () => {
+    expect(getStrFromQuality("+")).toEqual("+");
+    expect(getStrFromQuality(90)).toEqual("90");
+    expect(getStrFromQuality(void 0)).toEqual("");
+
+    expect(getStrFromQuality("*" as Quality)).toBeUndefined();
+    expect(getStrFromQuality(-10)).toBeUndefined();
+    expect(getStrFromQuality(1000)).toBeUndefined();
   });
 
-  it("isQualityLegal", () => {
-    expect(isQualityLegal("+")).toBeTruthy();
-    expect(isQualityLegal(90)).toBeTruthy();
-    expect(isQualityLegal(void 0)).toBeTruthy();
-
-    expect(isQualityLegal("*" as Quality)).toBeFalsy();
-    expect(isQualityLegal(-10)).toBeFalsy();
-    expect(isQualityLegal(1000)).toBeFalsy();
-  });
-
-  it("strToQuality", () => {
+  it("getQualityFromStr", () => {
     try {
-      expect(strToQuality("80")).toEqual(80);
-      expect(strToQuality("+")).toEqual("+");
-      expect(strToQuality("")).toBeUndefined();
-      strToQuality("X");
+      expect(getQualityFromStr("80")).toEqual(80);
+      expect(getQualityFromStr("+")).toEqual("+");
+      expect(getQualityFromStr("")).toBeUndefined();
+      getQualityFromStr("X");
     } catch (err: any) {
       expect(err.name).toEqual("TypeError");
+      expect(err.message).toEqual("X looks not a good quality mark!");
     }
   });
 }
