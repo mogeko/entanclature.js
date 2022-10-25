@@ -70,7 +70,7 @@ function fromURL(url: string | URL) {
   const opts: Opts = {
     baseURL: `${_url.protocol}//${_url.host}`,
     fileDir: _url.pathname.slice(0, breakpoint),
-    ext: isEmpty(ext),
+    ext: !isEmpty(ext),
   };
 
   if (type && opts.ext) {

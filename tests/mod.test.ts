@@ -2,11 +2,11 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { entanclature } from "../src/mod";
 import mock from "mock-fs";
 
-import type { Meta } from "../src/core/nomenclature";
+import type { Data } from "../src/core/nomenclature";
 
 describe("entanclature", () => {
   beforeAll(() => {
-    mock({ "path/image.png": Buffer.from([8, 6, 7, 5, 3, 0, 9]) });
+    mock({ "./path/image.png": Buffer.from([8, 6, 7, 5, 3, 0, 9]) });
   });
 
   afterAll(() => {
@@ -14,7 +14,7 @@ describe("entanclature", () => {
   });
 
   it("Entanglement name with a file path", async () => {
-    const meta: Meta = [
+    const meta: Data["meta"] = [
       { type: "image/png", quality: 80 },
       { type: "image/avif", quality: "+" },
       { type: "image/webp", quality: "-" },
@@ -23,7 +23,7 @@ describe("entanclature", () => {
       baseURL: "https://example.com",
       fileDir: "/path/",
     };
-    const result = await entanclature("path/image.png", meta, opts);
+    const result = await entanclature("./path/image.png", meta, opts);
 
     expect(result.baseURL).toEqual(opts.baseURL);
     expect(result.filedir).toEqual(opts.fileDir);
