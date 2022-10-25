@@ -1,15 +1,15 @@
 import fs from "fs/promises";
 import sysPath from "path";
 import { decode } from "./core/nomenclature";
-import { mixer, Opts } from "./core/entanglement";
-import { FileURL } from "./models/url";
+import { mixer } from "./core/entanglement";
+import { getTypeFromExt } from "./core/grammar";
 import { hash } from "./utils/hash";
 import { isURL } from "./utils/is_url";
 import { isEmpty } from "./utils/is_empty";
 
+import type { Opts, Result } from "./core/entanglement";
 import type { Meta } from "./core/nomenclature";
-import type { Result } from "./core/entanglement";
-import { Ext, GRAMMAR_META } from "./models/grammar";
+import type { Ext } from "./core/grammar";
 
 /**
  * This may be the only function you need to follow!
@@ -46,15 +46,15 @@ import { Ext, GRAMMAR_META } from "./models/grammar";
  * const resultFromFile = await entanclature.fromFile("/path/of/the/file.png", meta, opt)
  * ```
  */
-async function main(url: string | FileURL): Promise<Result>;
+async function main(url: string | URL): Promise<Result>;
 /**
  * If the string of a **file path** is passed, `meta` will be a must
  *
  * @param path - a string of file paths
  * @param meta - How should we handle this file?
  * */
-async function main(path: string, meta: Meta, opts?: Opts): Promise<Result>;
-async function main(source: string | FileURL, meta?: Meta, opts?: Opts) {
+async function main(path: string, meta: Meta, opts: Opts): Promise<Result>;
+async function main(source: string | URL, meta?: Meta, opts?: Opts) {
   if (typeof source === "string" && !isURL(source)) {
     return meta && opts ? await fromFile(source, meta, opts) : void 0;
   } else {
@@ -66,14 +66,14 @@ function fromURL(url: string | URL) {
   const _url = new URL(url);
   const breakpoint = _url.pathname.lastIndexOf("/") + 1;
   const [name, ext] = _url.pathname.slice(breakpoint).split(".");
-  const mime = GRAMMAR_META.find((m) => Array.from(m.ext).includes(ext as Ext))?.mime;
+  const type = getTypeFromExt(ext as Ext);
   const opts = {
     baseURL: `${_url.protocol}//${_url.host}`,
     fileDir: _url.pathname.slice(0, breakpoint),
   };
 
-  if (mime) {
-    return mixer(decode({ name, type: mime }), opts);
+  if (type) {
+    return mixer(decode({ name, type }), opts);
   }
 
   throw TypeError();

@@ -1,19 +1,19 @@
-import { GRAMMAR } from "../models/grammar";
+import { getTypeFromMark, getMarksFromType } from "./grammar";
 import { isEmpty } from "../utils/is_empty";
 import { base64 } from "../utils/base64";
 
-import type { MIME, Mark } from "../models/grammar";
+import type { Type, Mark } from "./grammar";
 
 export function encode({ hash, meta }: Data): FileInfo {
-  const init = { text: hash + "#", type: null as unknown as MIME };
+  const init = { text: hash + "#", type: null as unknown as Type };
   const { text, type } = meta.reduce((acc, m) => {
-    const mark = mimeToMark(m.mime);
+    const mark = getMarksFromType(m.type);
     const quality = qualityToStr(m.quality);
 
     if (!mark || !quality) return acc;
     return {
       text: acc.text.concat(mark, quality),
-      type: acc.type ?? m.mime,
+      type: acc.type ?? m.type,
     };
   }, init);
 
@@ -27,7 +27,7 @@ export function decode(file: FileInfo): Data {
     const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
     if (words) {
       const meta: Meta = words.map((w) => ({
-        mime: GRAMMAR[w.slice(0, 1) as Mark].mime,
+        type: getTypeFromMark(w.slice(0, 1) as Mark),
         quality: strToQuality(w.slice(1)),
       }));
       return { hash, meta };
@@ -35,13 +35,6 @@ export function decode(file: FileInfo): Data {
   }
 
   throw TypeError(); // TODO: Error Message
-}
-
-function mimeToMark(mime: MIME) {
-  const grammar = Object.entries(GRAMMAR);
-  const target = grammar.find(([_, m]) => m.mime === mime);
-
-  return target?.[0] as Mark | undefined;
 }
 
 function qualityToStr(quality: Quality) {
@@ -68,7 +61,7 @@ type Quality = number | "+" | "-" | undefined;
 
 export type FileInfo = {
   name: string;
-  type: MIME;
+  type: Type;
 };
 
 export type Data = {
@@ -77,16 +70,16 @@ export type Data = {
 };
 
 export type Meta = {
-  mime: MIME;
+  type: Type;
   quality?: Quality;
 }[];
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
   const meta: Meta = [
-    { mime: "image/png", quality: 80 },
-    { mime: "image/avif", quality: "+" },
-    { mime: "image/webp", quality: "-" },
+    { type: "image/png", quality: 80 },
+    { type: "image/avif", quality: "+" },
+    { type: "image/webp", quality: "-" },
   ];
   const data = { hash: "41BA2B9", meta };
 
@@ -104,11 +97,6 @@ if (import.meta.vitest) {
     };
 
     expect(decode(file)).toEqual(data);
-  });
-
-  it("mimeToMark", () => {
-    expect(mimeToMark("image/avif")).toEqual("A");
-    expect(mimeToMark("text/plain" as MIME)).toBeUndefined();
   });
 
   it("qualityToStr", () => {

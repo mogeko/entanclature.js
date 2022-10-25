@@ -15,9 +15,9 @@ describe("entanclature", () => {
 
   it("Entanglement name with a file path", async () => {
     const meta: Meta = [
-      { mime: "image/png", quality: 80 },
-      { mime: "image/avif", quality: "+" },
-      { mime: "image/webp", quality: "-" },
+      { type: "image/png", quality: 80 },
+      { type: "image/avif", quality: "+" },
+      { type: "image/webp", quality: "-" },
     ];
     const opts = {
       baseURL: "https://example.com",

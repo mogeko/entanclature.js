@@ -25,14 +25,8 @@ export default defineConfig({
           text: "CORE",
           items: [
             { text: "entanglement.ts", link: "/api-reference/modules/core_entanglement" },
+            { text: "grammar.ts", link: "/api-reference/modules/core_grammar" },
             { text: "nomenclature.ts", link: "/api-reference/modules/core_nomenclature" },
-          ],
-        },
-        {
-          text: "MODELS",
-          items: [
-            { text: "grammar.ts", link: "/api-reference/modules/models_grammar" },
-            { text: "url.ts", link: "/api-reference/modules/models_url" },
           ],
         },
         {

@@ -1,6 +1,6 @@
+import { getExtFromType } from "./grammar";
 import { encode } from "./nomenclature";
 import { clone } from "../utils/clone";
-import { GRAMMAR_META } from "../models/grammar";
 
 import type { Data, FileInfo } from "./nomenclature";
 
@@ -22,8 +22,8 @@ function enumerator(data: Data) {
     const mirror = clone(data);
     const [focus] = mirror.meta.splice(i, 1);
     mirror.meta.sort((a, b) => {
-      if (a.mime < b.mime) return -1;
-      if (a.mime > b.mime) return 1;
+      if (a.type < b.type) return -1;
+      if (a.type > b.type) return 1;
       return 0;
     });
     mirror.meta.unshift(focus);
@@ -34,9 +34,7 @@ function enumerator(data: Data) {
 function additionalExt(hasExt?: boolean) {
   return (file: FileInfo) => {
     if (hasExt !== false) {
-      const ext = GRAMMAR_META.find((m) => {
-        return m.mime === file.type;
-      })?.ext[0];
+      const ext = getExtFromType(file.type);
       const name = [file.name, ext ?? ""].join(".");
       return { name, type: file.type };
     } else {
@@ -62,9 +60,9 @@ if (import.meta.vitest) {
   const baseURL = "https://example.com";
   const fileDir = "/";
   const meta: Data["meta"] = [
-    { mime: "image/png", quality: 80 },
-    { mime: "image/avif", quality: "+" },
-    { mime: "image/webp", quality: "-" },
+    { type: "image/png", quality: 80 },
+    { type: "image/avif", quality: "+" },
+    { type: "image/webp", quality: "-" },
   ];
   const data: Data = { hash: "41BA2B9", meta };
 
@@ -88,25 +86,25 @@ if (import.meta.vitest) {
       {
         hash: "41BA2B9",
         meta: [
-          { mime: "image/png", quality: 80 },
-          { mime: "image/avif", quality: "+" },
-          { mime: "image/webp", quality: "-" },
+          { type: "image/png", quality: 80 },
+          { type: "image/avif", quality: "+" },
+          { type: "image/webp", quality: "-" },
         ],
       },
       {
         hash: "41BA2B9",
         meta: [
-          { mime: "image/avif", quality: "+" },
-          { mime: "image/png", quality: 80 },
-          { mime: "image/webp", quality: "-" },
+          { type: "image/avif", quality: "+" },
+          { type: "image/png", quality: 80 },
+          { type: "image/webp", quality: "-" },
         ],
       },
       {
         hash: "41BA2B9",
         meta: [
-          { mime: "image/webp", quality: "-" },
-          { mime: "image/avif", quality: "+" },
-          { mime: "image/png", quality: 80 },
+          { type: "image/webp", quality: "-" },
+          { type: "image/avif", quality: "+" },
+          { type: "image/png", quality: 80 },
         ],
       },
     ]);
