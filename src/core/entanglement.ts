@@ -49,6 +49,7 @@ export type Result = {
   files: FileInfo[];
   urls: URL[];
 };
+
 export type Opts = {
   baseURL: string;
   fileDir: string;

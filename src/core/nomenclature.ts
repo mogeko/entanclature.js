@@ -26,7 +26,7 @@ export function decode(file: FileInfo): Data {
     const [hash, sentence] = text.split("#");
     const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
     if (words) {
-      const meta: Meta = words.map((w) => ({
+      const meta: Data["meta"] = words.map((w) => ({
         type: getTypeFromMark(w.slice(0, 1) as Mark),
         quality: strToQuality(w.slice(1)),
       }));
@@ -66,17 +66,15 @@ export type FileInfo = {
 
 export type Data = {
   hash: string;
-  meta: Meta;
+  meta: {
+    type: Type;
+    quality?: Quality;
+  }[];
 };
-
-export type Meta = {
-  type: Type;
-  quality?: Quality;
-}[];
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
-  const meta: Meta = [
+  const meta: Data["meta"] = [
     { type: "image/png", quality: 80 },
     { type: "image/avif", quality: "+" },
     { type: "image/webp", quality: "-" },

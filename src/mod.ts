@@ -8,7 +8,7 @@ import { isURL } from "./utils/is_url";
 import { isEmpty } from "./utils/is_empty";
 
 import type { Opts, Result } from "./core/entanglement";
-import type { Meta } from "./core/nomenclature";
+import type { Data } from "./core/nomenclature";
 import type { Ext } from "./core/grammar";
 
 /**
@@ -67,16 +67,17 @@ function fromURL(url: string | URL) {
   const breakpoint = _url.pathname.lastIndexOf("/") + 1;
   const [name, ext] = _url.pathname.slice(breakpoint).split(".");
   const type = getTypeFromExt(ext as Ext);
-  const opts = {
+  const opts: Opts = {
     baseURL: `${_url.protocol}//${_url.host}`,
     fileDir: _url.pathname.slice(0, breakpoint),
+    ext: isEmpty(ext),
   };
 
-  if (type) {
+  if (type && opts.ext) {
     return mixer(decode({ name, type }), opts);
   }
 
-  throw TypeError();
+  throw Error();
 }
 
 async function fromFile(path: string, meta: Meta, opts: Opts) {
@@ -88,3 +89,5 @@ async function fromFile(path: string, meta: Meta, opts: Opts) {
 }
 
 export const entanclature = Object.assign(main, { fromURL, fromFile });
+
+type Meta = Data["meta"];
