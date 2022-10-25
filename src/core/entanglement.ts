@@ -1,7 +1,5 @@
 import { getExtFromType } from "./grammar";
 import { encode } from "./nomenclature";
-import { clone } from "../utils/clone";
-
 import type { Data, FileInfo } from "./nomenclature";
 
 export function mixer(data: Data, opts: Opts): Result {
@@ -17,9 +15,17 @@ export function mixer(data: Data, opts: Opts): Result {
   };
 }
 
+/* c8 ignore next 6 */
+// a polyfill for structuredClone
+if (typeof structuredClone === "undefined") {
+  global.structuredClone = function (obj: any) {
+    return JSON.parse(JSON.stringify(obj));
+  };
+}
+
 function enumerator(data: Data) {
   return data.meta.map((_, i) => {
-    const mirror = clone(data);
+    const mirror = structuredClone(data);
     const [focus] = mirror.meta.splice(i, 1);
     mirror.meta.sort((a, b) => {
       if (a.type < b.type) return -1;

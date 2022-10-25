@@ -33,7 +33,6 @@ export default defineConfig({
           text: "UTILS",
           items: [
             { text: "base64.ts", link: "/api-reference/modules/base64" },
-            { text: "clone.ts", link: "/api-reference/modules/clone" },
             { text: "hash.ts", link: "/api-reference/modules/utils_hash" },
             { text: "is_empty.ts", link: "/api-reference/modules/utils_is_empty" },
             { text: "is_url.ts", link: "/api-reference/modules/utils_is_url" },
