@@ -8,7 +8,7 @@ export function encode({ hash, meta }: Data): FileInfo {
   const init = { text: hash + "#", type: null as unknown as Type };
   const { text, type } = meta.reduce((acc, m) => {
     const mark = getMarksFromType(m.type);
-    const quality = qualityToStr(m.quality);
+    const quality = getStrFromQuality(m.quality);
 
     if (!mark || !quality) return acc;
     return {
@@ -28,16 +28,16 @@ export function decode(file: FileInfo): Data {
     if (words) {
       const meta: Data["meta"] = words.map((w) => ({
         type: getTypeFromMark(w.slice(0, 1) as Mark),
-        quality: strToQuality(w.slice(1)),
+        quality: getQualityFromStr(w.slice(1)),
       }));
       return { hash, meta };
     }
   }
 
-  throw TypeError(); // TODO: Error Message
+  throw TypeError(`We can't process ${text}(base64: ${file.name})!`); // TODO: Error Message
 }
 
-function qualityToStr(quality: Quality) {
+function getStrFromQuality(quality: Quality) {
   if (!quality) return "";
   if (typeof quality === "number") {
     if (quality >= 0 && quality <= 100) return String(quality);
@@ -45,7 +45,7 @@ function qualityToStr(quality: Quality) {
   return void 0;
 }
 
-function strToQuality(str: string): Quality {
+function getQualityFromStr(str: string): Quality {
   if (isEmpty(str)) return void 0;
   if (["+", "-"].includes(str)) {
     return str as "+" | "-";
@@ -53,7 +53,7 @@ function strToQuality(str: string): Quality {
     const num = parseInt(str);
     if (!isNaN(num) && num >= 0 && num <= 100) {
       return num;
-    } else throw TypeError(); // TODO: Error Message
+    } else throw TypeError(`${str} looks not a good quality mark!`);
   }
 }
 
@@ -97,24 +97,25 @@ if (import.meta.vitest) {
     expect(decode(file)).toEqual(data);
   });
 
-  it("qualityToStr", () => {
-    expect(qualityToStr("+")).toEqual("+");
-    expect(qualityToStr(90)).toEqual("90");
-    expect(qualityToStr(void 0)).toEqual("");
+  it("getStrFromQuality", () => {
+    expect(getStrFromQuality("+")).toEqual("+");
+    expect(getStrFromQuality(90)).toEqual("90");
+    expect(getStrFromQuality(void 0)).toEqual("");
 
-    expect(qualityToStr("*" as Quality)).toBeUndefined();
-    expect(qualityToStr(-10)).toBeUndefined();
-    expect(qualityToStr(1000)).toBeUndefined();
+    expect(getStrFromQuality("*" as Quality)).toBeUndefined();
+    expect(getStrFromQuality(-10)).toBeUndefined();
+    expect(getStrFromQuality(1000)).toBeUndefined();
   });
 
-  it("strToQuality", () => {
+  it("getQualityFromStr", () => {
     try {
-      expect(strToQuality("80")).toEqual(80);
-      expect(strToQuality("+")).toEqual("+");
-      expect(strToQuality("")).toBeUndefined();
-      strToQuality("X");
+      expect(getQualityFromStr("80")).toEqual(80);
+      expect(getQualityFromStr("+")).toEqual("+");
+      expect(getQualityFromStr("")).toBeUndefined();
+      getQualityFromStr("X");
     } catch (err: any) {
       expect(err.name).toEqual("TypeError");
+      expect(err.message).toEqual("X looks not a good quality mark!");
     }
   });
 }
