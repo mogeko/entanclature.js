@@ -7,7 +7,7 @@ import { hash } from "./utils/hash";
 import { isURL } from "./utils/is_url";
 import { isEmpty } from "./utils/is_empty";
 
-import type { Opts, Result } from "./core/entanglement";
+import type { Opts as MixerOpts, Result } from "./core/entanglement";
 import type { Data } from "./core/nomenclature";
 import type { Ext } from "./core/grammar";
 
@@ -85,9 +85,11 @@ async function fromFile(path: string, meta: Meta, opts: Opts) {
   const file = await fs.readFile(filepath);
 
   if (isEmpty(file)) throw Error(`It seems that ${filepath} is not a good file.`);
-  return mixer({ hash: hash(file), meta }, opts);
+  return mixer({ hash: hash(file), meta, check: opts.check }, opts);
 }
 
 export const entanclature = Object.assign(main, { fromURL, fromFile });
+
+type Opts = { check?: boolean } & MixerOpts;
 
 type Meta = Data["meta"];

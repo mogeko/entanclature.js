@@ -1,5 +1,6 @@
 import { getExtFromType } from "./grammar";
 import { encode } from "./nomenclature";
+
 import type { Data, FileInfo } from "./nomenclature";
 
 export function mixer(data: Data, opts: Opts): Result {

@@ -5,7 +5,7 @@ import { check } from "./calibration";
 
 import type { Type, Mark } from "./grammar";
 
-export function encode({ hash, meta }: Data): FileInfo {
+export function encode({ hash, meta, check: isCheck }: Data): FileInfo {
   const init = { sentence: "", type: null as unknown as Type };
   const { sentence, type } = meta.reduce((acc, m) => {
     const mark = getMarksFromType(m.type);
@@ -17,9 +17,15 @@ export function encode({ hash, meta }: Data): FileInfo {
       type: acc.type ?? m.type,
     };
   }, init);
-  const text = [hash, sentence, check(hash + sentence)].join("#");
 
-  return { name: base64.encode(text), type };
+  if (isCheck !== false) {
+    const checksum = check(hash + sentence);
+    const text = [hash, sentence, checksum].join("#");
+    return { name: base64.encode(text), type };
+  } else {
+    const text = [hash, sentence].join("#");
+    return { name: base64.encode(text), type };
+  }
 }
 
 export function decode(file: FileInfo): Data {
