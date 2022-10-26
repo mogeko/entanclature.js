@@ -28,4 +28,21 @@ describe("decode", () => {
       );
     }
   });
+
+  it("Decode without a checksum", () => {
+    const file: FileInfo = {
+      name: "NDFCQTJCOSNQODBBK1ct",
+      type: "image/avif",
+    };
+
+    const result = decode(file);
+
+    expect(result.hash).toEqual("41BA2B9");
+    expect(result.meta).toEqual([
+      { type: "image/png", quality: 80 },
+      { type: "image/avif", quality: "+" },
+      { type: "image/webp", quality: "-" },
+    ]);
+    expect(result.check).toEqual(false);
+  });
 });

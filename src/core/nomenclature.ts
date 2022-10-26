@@ -25,14 +25,21 @@ export function encode({ hash, meta }: Data): FileInfo {
 export function decode(file: FileInfo): Data {
   const text = base64.decode(file.name);
   if (text.includes("#")) {
-    const [hash, sentence] = text.split("#");
+    const [hash, sentence, checksum] = text.split("#");
+
+    if (checksum) {
+      if (check(hash + sentence) !== parseInt(checksum)) {
+        throw new Error("The checksum code is not correct!");
+      }
+    }
+
     const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
     if (words) {
       const meta: Data["meta"] = words.map((w) => ({
         type: getTypeFromMark(w.slice(0, 1) as Mark),
         quality: getQualityFromStr(w.slice(1)),
       }));
-      return { hash, meta };
+      return { hash, meta, check: checksum ?? false };
     }
   }
 
@@ -72,6 +79,7 @@ export type Data = {
     type: Type;
     quality?: Quality;
   }[];
+  check?: string | boolean;
 };
 
 if (import.meta.vitest) {
@@ -91,12 +99,14 @@ if (import.meta.vitest) {
   });
 
   it("decode", () => {
-    const file: FileInfo = {
+    const result = decode({
       name: "NDFCQTJCOSNQODBBK1ctIzI",
       type: "image/png",
-    };
+    });
 
-    expect(decode(file)).toEqual(data);
+    expect(result.hash).toEqual(data.hash);
+    expect(result.meta).toEqual(data.meta);
+    expect(result.check).not.toEqual(false);
   });
 
   it("getStrFromQuality", () => {
