@@ -1,36 +1,51 @@
 import { getTypeFromMark, getMarksFromType } from "./grammar";
 import { isEmpty } from "../utils/is_empty";
 import { base64 } from "../utils/base64";
+import { check } from "./calibration";
 
 import type { Type, Mark } from "./grammar";
 
-export function encode({ hash, meta }: Data): FileInfo {
-  const init = { text: hash + "#", type: null as unknown as Type };
-  const { text, type } = meta.reduce((acc, m) => {
+export function encode({ hash, meta, check: isCheck }: Data): FileInfo {
+  const init = { sentence: "", type: null as unknown as Type };
+  const { sentence, type } = meta.reduce((acc, m) => {
     const mark = getMarksFromType(m.type);
     const quality = getStrFromQuality(m.quality);
 
     if (!mark || !quality) return acc;
     return {
-      text: acc.text.concat(mark, quality),
+      sentence: acc.sentence.concat(mark, quality),
       type: acc.type ?? m.type,
     };
   }, init);
 
-  return { name: base64.encode(text), type };
+  if (isCheck !== false) {
+    const checksum = check(hash + sentence);
+    const text = [hash, sentence, checksum].join("#");
+    return { name: base64.encode(text), type };
+  } else {
+    const text = [hash, sentence].join("#");
+    return { name: base64.encode(text), type };
+  }
 }
 
 export function decode(file: FileInfo): Data {
   const text = base64.decode(file.name);
   if (text.includes("#")) {
-    const [hash, sentence] = text.split("#");
+    const [hash, sentence, checksum] = text.split("#");
+
+    if (checksum) {
+      if (check(hash + sentence) !== parseInt(checksum)) {
+        throw new Error("The checksum code is not correct!");
+      }
+    }
+
     const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
     if (words) {
       const meta: Data["meta"] = words.map((w) => ({
         type: getTypeFromMark(w.slice(0, 1) as Mark),
         quality: getQualityFromStr(w.slice(1)),
       }));
-      return { hash, meta };
+      return { hash, meta, check: checksum ?? false };
     }
   }
 
@@ -70,6 +85,7 @@ export type Data = {
     type: Type;
     quality?: Quality;
   }[];
+  check?: string | boolean;
 };
 
 if (import.meta.vitest) {
@@ -84,17 +100,19 @@ if (import.meta.vitest) {
   it("encode", () => {
     const file = encode(data);
 
-    expect(file.name).toEqual("NDFCQTJCOSNQODBBK1ct");
+    expect(file.name).toEqual("NDFCQTJCOSNQODBBK1ctIzI");
     expect(file.type).toEqual("image/png");
   });
 
   it("decode", () => {
-    const file: FileInfo = {
-      name: "NDFCQTJCOSNQODBBK1ct",
+    const result = decode({
+      name: "NDFCQTJCOSNQODBBK1ctIzI",
       type: "image/png",
-    };
+    });
 
-    expect(decode(file)).toEqual(data);
+    expect(result.hash).toEqual(data.hash);
+    expect(result.meta).toEqual(data.meta);
+    expect(result.check).not.toEqual(false);
   });
 
   it("getStrFromQuality", () => {
