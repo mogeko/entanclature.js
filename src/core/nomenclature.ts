@@ -1,21 +1,23 @@
 import { getTypeFromMark, getMarksFromType } from "./grammar";
 import { isEmpty } from "../utils/is_empty";
 import { base64 } from "../utils/base64";
+import { check } from "./calibration";
 
 import type { Type, Mark } from "./grammar";
 
 export function encode({ hash, meta }: Data): FileInfo {
-  const init = { text: hash + "#", type: null as unknown as Type };
-  const { text, type } = meta.reduce((acc, m) => {
+  const init = { sentence: "", type: null as unknown as Type };
+  const { sentence, type } = meta.reduce((acc, m) => {
     const mark = getMarksFromType(m.type);
     const quality = getStrFromQuality(m.quality);
 
     if (!mark || !quality) return acc;
     return {
-      text: acc.text.concat(mark, quality),
+      sentence: acc.sentence.concat(mark, quality),
       type: acc.type ?? m.type,
     };
   }, init);
+  const text = [hash, sentence, check(hash + sentence)].join("#");
 
   return { name: base64.encode(text), type };
 }
@@ -84,13 +86,13 @@ if (import.meta.vitest) {
   it("encode", () => {
     const file = encode(data);
 
-    expect(file.name).toEqual("NDFCQTJCOSNQODBBK1ct");
+    expect(file.name).toEqual("NDFCQTJCOSNQODBBK1ctIzI");
     expect(file.type).toEqual("image/png");
   });
 
   it("decode", () => {
     const file: FileInfo = {
-      name: "NDFCQTJCOSNQODBBK1ct",
+      name: "NDFCQTJCOSNQODBBK1ctIzI",
       type: "image/png",
     };
 

@@ -79,9 +79,9 @@ if (import.meta.vitest) {
     expect(result.baseURL).toEqual(baseURL);
     expect(result.filedir).toEqual("/");
     expect(result.files).toEqual([
-      { name: "NDFCQTJCOSNQODBBK1ct.png", type: "image/png" },
-      { name: "NDFCQTJCOSNBK1A4MFct.avif", type: "image/avif" },
-      { name: "NDFCQTJCOSNXLUErUDgw.webp", type: "image/webp" },
+      { name: "NDFCQTJCOSNQODBBK1ctIzI.png", type: "image/png" },
+      { name: "NDFCQTJCOSNBK1A4MFctIzc.avif", type: "image/avif" },
+      { name: "NDFCQTJCOSNXLUErUDgwIzM.webp", type: "image/webp" },
     ]);
     result.urls.map((url, i) => {
       const _url = new URL(url);
