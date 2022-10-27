@@ -20,7 +20,7 @@ function getCharCodeFromStr(str: string) {
   return Array.from(str, (c) => c.charCodeAt(0));
 }
 
-type Checksum = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "X";
+type Checksum = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "X";
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;

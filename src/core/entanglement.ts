@@ -80,9 +80,9 @@ if (import.meta.vitest) {
     expect(result.baseURL).toEqual(baseURL);
     expect(result.filedir).toEqual("/");
     expect(result.files).toEqual([
-      { name: "NDFCQTJCOSNQODBBK1ctIzI.png", type: "image/png" },
-      { name: "NDFCQTJCOSNBK1A4MFctIzc.avif", type: "image/avif" },
-      { name: "NDFCQTJCOSNXLUErUDgwIzM.webp", type: "image/webp" },
+      { name: "NDFCQTJCOVA4MEErVy0y.png", type: "image/png" },
+      { name: "NDFCQTJCOUErUDgwVy03.avif", type: "image/avif" },
+      { name: "NDFCQTJCOVctQStQODAz.webp", type: "image/webp" },
     ]);
     result.urls.map((url, i) => {
       const _url = new URL(url);

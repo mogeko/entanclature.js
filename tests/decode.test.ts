@@ -4,45 +4,37 @@ import { decode } from "../src/core/nomenclature";
 import type { FileInfo } from "../src/core/nomenclature";
 
 describe("decode", () => {
-  it("Decode with a empty name", () => {
+  it("Decode with a empty file name", () => {
     try {
       decode({ name: "", type: "image/avif" });
     } catch (err: any) {
-      expect(err.name).toEqual("TypeError");
+      expect(err.name).toEqual("Error");
       expect(err.message).toEqual("We can't process  (base64: )!");
     }
   });
 
-  it("Decode with a empty name", () => {
+  it("Decode with a wrong file name", () => {
     const file: FileInfo = {
-      name: "SVRfSVNfQV9XUk9OR19URVhU",
+      name: "aXRfaXNfYV93cm9uZ190ZXh0NA",
       type: "image/avif",
     };
 
     try {
-      decode(file);
+      expect(decode(file)).toEqual("");
     } catch (err: any) {
-      expect(err.name).toEqual("TypeError");
+      expect(err.name).toEqual("Error");
       expect(err.message).toEqual(
-        "We can't process IT_IS_A_WRONG_TEXT (base64: SVRfSVNfQV9XUk9OR19URVhU)!"
+        "We can't process it_is_a_wrong_text4 (base64: aXRfaXNfYV93cm9uZ190ZXh0NA)!"
       );
     }
   });
 
-  it("Decode without a checksum", () => {
-    const file: FileInfo = {
-      name: "NDFCQTJCOSNQODBBK1ct",
-      type: "image/avif",
-    };
-
-    const result = decode(file);
-
-    expect(result.hash).toEqual("41BA2B9");
-    expect(result.meta).toEqual([
-      { type: "image/png", quality: 80 },
-      { type: "image/avif", quality: "+" },
-      { type: "image/webp", quality: "-" },
-    ]);
-    expect(result.check).toEqual(false);
+  it("Decode with a wrong check code", () => {
+    try {
+      decode({ name: "NDFCQTJCOVA4MEErVy0x", type: "image/avif" });
+    } catch (err: any) {
+      expect(err.name).toEqual("Error");
+      expect(err.message).toEqual("The checksum code is not correct!");
+    }
   });
 });

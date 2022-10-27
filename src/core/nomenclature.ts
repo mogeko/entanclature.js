@@ -5,51 +5,43 @@ import { check } from "./calibration";
 
 import type { Type, Mark } from "./grammar";
 
-export function encode({ hash, meta, check: isCheck }: Data): FileInfo {
-  const init = { sentence: "", type: null as unknown as Type };
-  const { sentence, type } = meta.reduce((acc, m) => {
+export function encode({ hash, meta }: Data): FileInfo {
+  const init = { text: hash, type: null as unknown as Type };
+  const { text, type } = meta.reduce((acc, m) => {
     const mark = getMarksFromType(m.type);
     const quality = getStrFromQuality(m.quality);
 
     if (!mark || !quality) return acc;
     return {
-      sentence: acc.sentence.concat(mark, quality),
+      text: acc.text.concat(mark, quality),
       type: acc.type ?? m.type,
     };
   }, init);
 
-  if (isCheck !== false) {
-    const checksum = check(hash + sentence);
-    const text = [hash, sentence, checksum].join("#");
-    return { name: base64.encode(text), type };
-  } else {
-    const text = [hash, sentence].join("#");
-    return { name: base64.encode(text), type };
-  }
+  return { name: base64.encode(text + check(text)), type };
 }
 
 export function decode(file: FileInfo): Data {
   const text = base64.decode(file.name);
-  if (text.includes("#")) {
-    const [hash, sentence, checksum] = text.split("#");
+  const [hash, sentence, checksum] = splitText(text);
 
-    if (checksum) {
-      if (!check(hash + sentence, checksum)) {
-        throw new Error("The checksum code is not correct!");
-      }
-    }
-
-    const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
-    if (words) {
-      const meta: Data["meta"] = words.map((w) => ({
-        type: getTypeFromMark(w.slice(0, 1) as Mark),
-        quality: getQualityFromStr(w.slice(1)),
-      }));
-      return { hash, meta, check: checksum ?? false };
-    }
+  if (!check(hash + sentence, checksum)) {
+    throw new Error("The checksum code is not correct!");
   }
 
-  throw TypeError(`We can't process ${text} (base64: ${file.name})!`);
+  const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
+
+  if (words) {
+    const meta: Data["meta"] = words.map((w) => ({
+      type: getTypeFromMark(w.slice(0, 1) as Mark),
+      quality: getQualityFromStr(w.slice(1)),
+    }));
+    return { hash, meta, check: checksum };
+  } else throw Error(`We can't process ${text} (base64: ${file.name})!`);
+}
+
+function splitText(text: string) {
+  return [text.slice(0, 7), text.slice(7, -1), text.slice(-1)];
 }
 
 function getStrFromQuality(quality: Quality) {
@@ -85,7 +77,7 @@ export type Data = {
     type: Type;
     quality?: Quality;
   }[];
-  check?: string | boolean;
+  check?: string;
 };
 
 if (import.meta.vitest) {
@@ -100,19 +92,26 @@ if (import.meta.vitest) {
   it("encode", () => {
     const file = encode(data);
 
-    expect(file.name).toEqual("NDFCQTJCOSNQODBBK1ctIzI");
+    expect(file.name).toEqual("NDFCQTJCOVA4MEErVy0y");
     expect(file.type).toEqual("image/png");
   });
 
   it("decode", () => {
     const result = decode({
-      name: "NDFCQTJCOSNQODBBK1ctIzI",
+      name: "NDFCQTJCOVA4MEErVy0y",
       type: "image/png",
     });
 
     expect(result.hash).toEqual(data.hash);
     expect(result.meta).toEqual(data.meta);
-    expect(result.check).not.toEqual(false);
+    expect(result.check).toEqual("2");
+  });
+
+  it("splitText", () => {
+    const text = "41BA2B9P80A+W-2";
+    const result = ["41BA2B9", "P80A+W-", "2"];
+
+    expect(splitText(text)).toEqual(result);
   });
 
   it("getStrFromQuality", () => {
