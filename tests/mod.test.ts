@@ -28,33 +28,33 @@ describe("entanclature", () => {
     expect(result.baseURL).toEqual(opts.baseURL);
     expect(result.filedir).toEqual(opts.fileDir);
     expect(result.files).toEqual([
-      { name: "OTk0QTc5OSNQODBBK1ctIzg.png", type: "image/png" },
-      { name: "OTk0QTc5OSNBK1A4MFctIzI.avif", type: "image/avif" },
-      { name: "OTk0QTc5OSNXLUErUDgwIzk.webp", type: "image/webp" },
+      { name: "OTk0QTc5OVA4MEErVy04.png", type: "image/png" },
+      { name: "OTk0QTc5OUErUDgwVy0y.avif", type: "image/avif" },
+      { name: "OTk0QTc5OVctQStQODA5.webp", type: "image/webp" },
     ]);
   });
 
   it("Entanglement name with a URL", async () => {
-    const result = await entanclature("https://example.com/path/OTk0QTc5OSNQODBBK1ctIzg.png");
+    const result = await entanclature("https://example.com/path/OTk0QTc5OVA4MEErVy04.png");
 
     expect(result.baseURL).toEqual("https://example.com");
     expect(result.filedir).toEqual("/path/");
     expect(result.files).toEqual([
-      { name: "OTk0QTc5OSNQODBBK1ctIzg.png", type: "image/png" },
-      { name: "OTk0QTc5OSNBK1A4MFctIzI.avif", type: "image/avif" },
-      { name: "OTk0QTc5OSNXLUErUDgwIzk.webp", type: "image/webp" },
+      { name: "OTk0QTc5OVA4MEErVy04.png", type: "image/png" },
+      { name: "OTk0QTc5OUErUDgwVy0y.avif", type: "image/avif" },
+      { name: "OTk0QTc5OVctQStQODA5.webp", type: "image/webp" },
     ]);
   });
 
   it("Entanglement name with a URL but without await", () => {
-    const result = entanclature.fromURL("https://example.com/path/OTk0QTc5OSNQODBBK1ctIzg.png");
+    const result = entanclature.fromURL("https://example.com/path/OTk0QTc5OVA4MEErVy04.png");
 
     expect(result.baseURL).toEqual("https://example.com");
     expect(result.filedir).toEqual("/path/");
     expect(result.files).toEqual([
-      { name: "OTk0QTc5OSNQODBBK1ctIzg.png", type: "image/png" },
-      { name: "OTk0QTc5OSNBK1A4MFctIzI.avif", type: "image/avif" },
-      { name: "OTk0QTc5OSNXLUErUDgwIzk.webp", type: "image/webp" },
+      { name: "OTk0QTc5OVA4MEErVy04.png", type: "image/png" },
+      { name: "OTk0QTc5OUErUDgwVy0y.avif", type: "image/avif" },
+      { name: "OTk0QTc5OVctQStQODA5.webp", type: "image/webp" },
     ]);
   });
 });

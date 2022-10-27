@@ -4,6 +4,10 @@ title: 什么是 Entanclature？
 
 # {{ $frontmatter.title }}
 
+::: danger
+Need to be updated!
+:::
+
 纠缠命名法 (Entanclature) 的灵感来自于[量子纠缠](https://zh.wikipedia.org/wiki/量子纏結)；将数个图片纠缠到一起，通过观测 (解码) 一个图片的状态 (URL) 便可得到其余所有图片的状态 (URL)。其主要目的是为了在保证兼容性的基础上扩展 [`<img>` 标签](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/img)，使其能够被无缝切换为 [`<picture>`](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/picture)。
 
 ::: info
