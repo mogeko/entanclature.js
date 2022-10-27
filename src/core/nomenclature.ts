@@ -34,7 +34,7 @@ export function decode(file: FileInfo): Data {
     const [hash, sentence, checksum] = text.split("#");
 
     if (checksum) {
-      if (check(hash + sentence) !== parseInt(checksum)) {
+      if (!check(hash + sentence, checksum)) {
         throw new Error("The checksum code is not correct!");
       }
     }

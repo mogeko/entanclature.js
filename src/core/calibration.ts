@@ -1,8 +1,10 @@
-export function check(text: string) {
+export function check(text: string, checksum?: string): string | boolean {
+  if (checksum) return check(text) === checksum;
   const ascii = getCharCodeFromStr(text);
   const coeff = coefficient(ascii.length);
+  const sum = ascii.reduce((x, y, i) => x + y * coeff[i], 0) % 11;
 
-  return ascii.reduce((x, y, i) => x + y * coeff[i], 0) % 11;
+  return sum < 10 ? sum.toString() : "X";
 }
 
 /** [2^(n-1)%11, 2^(n-2)%11, ..., 2^1%11] */
@@ -20,8 +22,10 @@ if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
 
   it("check", () => {
-    expect(check("")).toEqual(0);
-    expect(check("41BA2B9P80A+W-")).toEqual(2);
+    expect(check("")).toEqual("0");
+    expect(check("41BA2B9P80A+W-")).toEqual("2");
+    expect(check("41BA2B9P80A+W-", "2")).toEqual(true);
+    expect(check("41BA2BA")).toEqual("X");
   });
 
   it("getCharCodeFromStr", () => {
