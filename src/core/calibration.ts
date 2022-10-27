@@ -1,10 +1,12 @@
-export function check(text: string, checksum?: string): string | boolean {
+export function check(text: string): Checksum;
+export function check(text: string, checksum: string): boolean;
+export function check(text: string, checksum?: string): Checksum | boolean {
   if (checksum) return check(text) === checksum;
   const ascii = getCharCodeFromStr(text);
   const coeff = coefficient(ascii.length);
   const sum = ascii.reduce((x, y, i) => x + y * coeff[i], 0) % 11;
 
-  return sum < 10 ? sum.toString() : "X";
+  return (sum < 10 ? sum.toString() : "X") as Checksum;
 }
 
 /** [2^(n-1)%11, 2^(n-2)%11, ..., 2^1%11] */
@@ -17,6 +19,8 @@ function coefficient(length: number) {
 function getCharCodeFromStr(str: string) {
   return Array.from(str, (c) => c.charCodeAt(0));
 }
+
+type Checksum = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "X";
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
