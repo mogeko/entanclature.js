@@ -1,4 +1,4 @@
-/** @public @readonly */
+/** @readonly */
 const GRAMMAR = {
   A: { type: "image/avif", ext: ["avif"] },
   G: { type: "image/gif", ext: ["gif"] },
@@ -8,7 +8,7 @@ const GRAMMAR = {
   W: { type: "image/webp", ext: ["webp"] },
 } as const;
 
-/** @public @readonly */
+/** @readonly */
 const GRAMMAR_META = Object.values(GRAMMAR);
 
 export function getMarksFromType(type: Type) {
@@ -34,7 +34,6 @@ export function getExtFromType(type: Type) {
   })?.ext[0];
 }
 
-/** @internal */
 type ValueOf<T> = T[keyof T];
 
 export type Mark = keyof typeof GRAMMAR;
