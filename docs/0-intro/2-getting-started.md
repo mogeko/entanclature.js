@@ -31,7 +31,7 @@ pnpm add entanclature
 
 然后在你的项目中导入并使用它：
 
-```ts
+```typescript
 import { entanclature } from "entanclature";
 
 const url = "https://example.com/images/OTk0QTc5OVA4MEErVy04.png";
@@ -42,7 +42,7 @@ console.log(result);
 
 `entanclature` 还支持以本地文件路径作为参数 (Node.js only)，但你需要手动定义如果处理图片的 `meta` 信息，并指定 URL 的 `baseURL` 和 `fileDir`：
 
-```ts
+```typescript
 import { entanclature } from "entanclature";
 
 import type { Meta, Opts } from "entanclature";
@@ -64,7 +64,7 @@ console.log(result);
 
 如果你不喜欢 `await`，你还可以使用 `entanclature.formURL` 来处理 URLs：
 
-```ts
+```typescript
 import { entanclature } from "entanclature";
 
 const url = "https://example.com/images/OTk0QTc5OVA4MEErVy04.png";
@@ -75,7 +75,7 @@ console.log(result);
 
 但是对于文件路径，`await` 是必须的，因为我们需要计算该文件的 SHA-1：
 
-```ts
+```typescript
 import { entanclature } from "entanclature";
 
 // 省略定义 `filePath`, `meta` 和 `opts`。

@@ -1,3 +1,14 @@
+/**
+ * A library for Entanglement Nomenclature.
+ *
+ * @remarks
+ * This module exports only one function `entanclature` to handle
+ * the Entanglement Nomenclature. `entanclature` accepts a `URL` or
+ * file path (Node.js only) as an argument and it always returns a fixed data structure.
+ *
+ * @packageDocumentation
+ */
+
 import fs from "fs/promises";
 import sysPath from "path";
 import { decode } from "./core/nomenclature";
@@ -14,21 +25,23 @@ import type { Ext } from "./core/grammar";
 /**
  * @public
  *
- * This may be the only function you need to follow!
+ * This is the main function of this project!
  *
+ * @remarks
  * You can pass in a string of file paths or URLs.
  * We will process them as appropriate and return information about
  * all files that pass through Entanglement Nomenclature.
  *
- * If the string of a file path is passed, `meta` will be a must
+ * If the string of a file path is passed, `meta`, `baseURL` and `fileDir` will be a must.
+ *
+ * @returns The {@link Result | result} of the processing.
  *
  * @example
- *
  * Promises are required because we will calculate the SHA-1 of the file.
  *
  * You can import and use it in your project like this:
  *
- * ```ts
+ * ```typescript
  * import { entanclature } from "entanclature";
  *
  * const url = "https://example.com/images/OTk0QTc5OVA4MEErVy04.png";
@@ -37,11 +50,12 @@ import type { Ext } from "./core/grammar";
  * console.log(result);
  * ```
  *
+ * @example
  * We also support the local file path as a parameter (Node.js only),
  * but you need to manually define the `meta` information for processing
  * images, and specify the `baseURL` and `fileDir` of the URL:
  *
- * ```ts
+ * ```typescript
  * import { entanclature } from "entanclature";
  *
  * import type { Meta, Opts } from "entanclature";
@@ -61,9 +75,10 @@ import type { Ext } from "./core/grammar";
  * console.log(result);
  * ```
  *
+ * @example
  * If you don't like `await`, you can also use `entanclature.form URL` to handle URLs:
  *
- * ```ts
+ * ```typescript
  * import { entanclature } from "entanclature";
  *
  * const url = "https://example.com/images/OTk0QTc5OVA4MEErVy04.png";
@@ -75,7 +90,7 @@ import type { Ext } from "./core/grammar";
  * However, `await` is required for the file path,
  * because we need to calculate the SHA-1 of the file:
  *
- * ```ts
+ * ```typescript
  * import { entanclature } from "entanclature";
  *
  * // Omit defining `filePath`, `meta` and `opts` here.
@@ -84,7 +99,6 @@ import type { Ext } from "./core/grammar";
  *
  * console.log(result);
  * ```
- *
  */
 export const entanclature = Object.assign(main, { fromURL, fromFile });
 
@@ -127,5 +141,19 @@ async function fromFile(path: string, meta: Meta, opts: Opts) {
   return mixer({ hash: hash(file), meta }, opts);
 }
 
+/** @inheritDoc Opts @inheritDoc Result */
 export type { Opts, Result } from "./core/entanglement";
+/** @inheritDoc Data @inheritDoc FileInfo */
+export type { Data, FileInfo } from "./core/nomenclature";
+/**
+ * An array, describe how to transform the images.
+ *
+ * @remarks
+ * Each element of the array corresponds to a picture.
+ * At the same time, the first element of the array
+ * is the original image.
+ *
+ * `type` is the MIME type of the image. `quality` is
+ * the quality of the image (allowed to be empty).
+ */
 export type Meta = Data["meta"];

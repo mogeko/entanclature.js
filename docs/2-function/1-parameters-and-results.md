@@ -10,7 +10,7 @@ title: 输入 & 输出
 
 这儿有一个具体输出的结果的示例：
 
-```js
+```typescript
 {
   transform: true,
   baseURL: "https://example.com",
