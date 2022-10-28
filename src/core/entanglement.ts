@@ -1,9 +1,9 @@
 import { getExtFromType } from "./grammar";
 import { encode } from "./nomenclature";
 
-import type { Data, FileInfo } from "./nomenclature";
+import type { Decoded, Encoded } from "./nomenclature";
 
-export function mixer(data: Data, opts: Opts): Result {
+export function mixer(data: Decoded, opts: Opts): Result {
   const files = enumerator(data).map(encode).map(additionalExt(opts.ext));
 
   return {
@@ -24,7 +24,7 @@ if (typeof structuredClone === "undefined") {
   };
 }
 
-function enumerator(data: Data) {
+function enumerator(data: Decoded) {
   return data.meta.map((_, i) => {
     const mirror = structuredClone(data);
     const [focus] = mirror.meta.splice(i, 1);
@@ -39,7 +39,7 @@ function enumerator(data: Data) {
 }
 
 function additionalExt(hasExt?: boolean) {
-  return (file: FileInfo) => {
+  return (file: Encoded) => {
     if (hasExt !== false) {
       const ext = getExtFromType(file.type);
       const name = [file.name, ext ?? ""].join(".");
@@ -78,7 +78,7 @@ function additionalExt(hasExt?: boolean) {
 export type Result = {
   baseURL: string;
   filedir: string;
-  files: FileInfo[];
+  files: Encoded[];
   urls: URL[];
 };
 
@@ -89,6 +89,9 @@ export type Result = {
  * If you use a URL, `baseURL` and `fileDir` will be automatically set.
  *
  * If you use the file path, you need to specify it manually.
+ *
+ * `ext` determines whether the {@link Encoded | generated filename}
+ * has an extension.
  */
 export type Opts = {
   baseURL: string;
@@ -100,12 +103,12 @@ if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
   const baseURL = "https://example.com";
   const fileDir = "/";
-  const meta: Data["meta"] = [
+  const meta: Decoded["meta"] = [
     { type: "image/png", quality: 80 },
     { type: "image/avif", quality: "+" },
     { type: "image/webp", quality: "-" },
   ];
-  const data: Data = { hash: "41BA2B9", meta };
+  const data: Decoded = { hash: "41BA2B9", meta };
 
   it("mixer", () => {
     const result = mixer(data, { baseURL, fileDir });
@@ -153,7 +156,7 @@ if (import.meta.vitest) {
   });
 
   it("additionalExt", () => {
-    const file: FileInfo = {
+    const file: Encoded = {
       type: "image/png",
       name: "EXAMPLE_FILE",
     };
