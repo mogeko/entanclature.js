@@ -15,28 +15,30 @@ export default defineConfig({
           text: "介绍",
           items: [{ text: "什么是 Entanclature？", link: "/guide/what-is-entanclature" }],
         },
+        {
+          text: "APIs",
+          items: [
+            { text: "API Reference", link: "/api-reference/" },
+            { text: "Type Reference", link: "/api-report/" },
+          ],
+        },
       ],
       "/api-reference/": [
         {
           text: "INDEX",
-          items: [{ text: "mod.ts", link: "/api-reference/modules/mod" }],
+          items: [{ text: "entanclature", link: "/api-reference/" }],
         },
         {
-          text: "CORE",
-          items: [
-            { text: "entanglement.ts", link: "/api-reference/modules/core_entanglement" },
-            { text: "grammar.ts", link: "/api-reference/modules/core_grammar" },
-            { text: "nomenclature.ts", link: "/api-reference/modules/core_nomenclature" },
-          ],
+          text: "FUNCTIONS",
+          items: [{ text: "entanclature", link: "/api-reference/entanclature.entanclature" }],
         },
         {
-          text: "UTILS",
-          items: [
-            { text: "base64.ts", link: "/api-reference/modules/base64" },
-            { text: "hash.ts", link: "/api-reference/modules/utils_hash" },
-            { text: "is_empty.ts", link: "/api-reference/modules/utils_is_empty" },
-            { text: "is_url.ts", link: "/api-reference/modules/utils_is_url" },
-          ],
+          text: "MODULES",
+          items: [{ text: "entanclature", link: "/api-reference/entanclature" }],
+        },
+        {
+          text: "OTHERS",
+          items: [{ text: "Type Reference", link: "/api-report/" }],
         },
       ],
     },
