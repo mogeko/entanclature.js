@@ -28,8 +28,8 @@
   ],
   "license": "MIT",
   "scripts": {
-    "tsdoc": "tsc && api-extractor run -c ./docs/.api-extractor/config.json",
-    "tsdoc.md": "pnpm run tsdoc && api-documenter markdown -i ./docs/api-reference/temp/ -o ./docs/api-reference",
+    "tsdoc": "tsc && api-extractor run -c ./docs/api-reference/api-extractor.json",
+    "tsdoc.md": "pnpm run tsdoc && api-documenter markdown -i ./docs/api-reference/_/temp/ -o ./docs/api-reference/_/",
     "docs.dev": "pnpm run tsdoc.md && vitepress dev docs",
     "docs": "pnpm run tsdoc.md && vitepress build docs",
     "dev": "vite",
