@@ -4,10 +4,6 @@ title: 什么是 Entanclature？
 
 # {{ $frontmatter.title }}
 
-::: danger
-Need to be updated!
-:::
-
 纠缠命名法 (Entanclature) 的灵感来自于[量子纠缠](https://zh.wikipedia.org/wiki/量子纏結)；将数个图片纠缠到一起，通过观测 (解码) 一个图片的状态 (URL) 便可得到其余所有图片的状态 (URL)。其主要目的是为了在保证兼容性的基础上扩展 [`<img>` 标签](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/img)，使其能够被无缝切换为 [`<picture>`](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/picture)。
 
 ::: info
@@ -44,6 +40,6 @@ Need to be updated!
 
 ![status_quo](/images/1_status_quo.png)
 
-但如果通过纠缠命名法，我们可以将冗余信息编码在 PNG 文件的文件名中；如果我们得到了 PNG 文件的文件名，便可以获得与之关联的 AVIF、WebP...等格式的文件名，进而获得它们的 URL。反之亦然；通过 AVIF 等格式文件的文件名中也包含了 PNG 文件的信息。
+但如果通过 Entanclature，我们可以将冗余信息编码在 PNG 文件的文件名中；如果我们得到了 PNG 文件的文件名，便可以获得与之关联的 AVIF、WebP...等格式的文件名，进而获得它们的 URL。反之亦然；通过 AVIF 等格式文件的文件名中也包含了 PNG 文件的信息。
 
 ![aspiration](/images/2_aspiration.png)

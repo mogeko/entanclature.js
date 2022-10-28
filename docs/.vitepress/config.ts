@@ -16,7 +16,7 @@ export default defineConfig({
       {
         text: "实现原理",
         items: [
-          { text: "前提", link: "/1-principle/1-before-use" },
+          { text: "前提 (限制)", link: "/1-principle/1-before-use" },
           { text: "编码流程", link: "/1-principle/2-coding-process" },
           { text: "句法分析", link: "/1-principle/3-syntax-analysis" },
         ],
