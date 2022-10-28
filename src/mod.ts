@@ -18,7 +18,7 @@ import type { Ext } from "./core/grammar";
  * We will process them as appropriate and return information about
  * all files that pass through [Entanglement Nomenclature](/guide/what-is-entanclature).
  *
- * @param url - a string of URL
+ * If the string of a **file path** is passed, `meta` will be a must
  *
  * @example
  *
@@ -46,13 +46,10 @@ import type { Ext } from "./core/grammar";
  * const resultFromFile = await entanclature.fromFile("/path/of/the/file.png", meta, opt)
  * ```
  */
+export const entanclature = Object.assign(main, { fromURL, fromFile });
+
+/** @public */
 async function main(url: string | URL): Promise<Result>;
-/**
- * If the string of a **file path** is passed, `meta` will be a must
- *
- * @param path - a string of file paths
- * @param meta - How should we handle this file?
- * */
 async function main(path: string, meta: Meta, opts: Opts): Promise<Result>;
 async function main(source: string | URL, meta?: Meta, opts?: Opts) {
   if (typeof source === "string" && !isURL(source)) {
@@ -62,6 +59,7 @@ async function main(source: string | URL, meta?: Meta, opts?: Opts) {
   }
 }
 
+/** @public */
 function fromURL(url: string | URL) {
   const _url = new URL(url);
   const breakpoint = _url.pathname.lastIndexOf("/") + 1;
@@ -80,6 +78,7 @@ function fromURL(url: string | URL) {
   } else throw Error(`We cannot convert this URL (${url})`);
 }
 
+/** @public */
 async function fromFile(path: string, meta: Meta, opts: Opts) {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
@@ -87,7 +86,5 @@ async function fromFile(path: string, meta: Meta, opts: Opts) {
   if (isEmpty(file)) throw Error(`It seems that ${filepath} is not a good file.`);
   return mixer({ hash: hash(file), meta }, opts);
 }
-
-export const entanclature = Object.assign(main, { fromURL, fromFile });
 
 type Meta = Data["meta"];
