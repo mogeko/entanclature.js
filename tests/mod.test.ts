@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { entanclature } from "../src/mod";
 import mock from "mock-fs";
 
-import type { Data } from "../src/core/nomenclature";
+import type { Meta, Opts } from "../src/mod";
 
 describe("entanclature", () => {
   beforeAll(() => {
@@ -14,12 +14,12 @@ describe("entanclature", () => {
   });
 
   it("Entanglement name with a file path", async () => {
-    const meta: Data["meta"] = [
+    const meta: Meta = [
       { type: "image/png", quality: 80 },
       { type: "image/avif", quality: "+" },
       { type: "image/webp", quality: "-" },
     ];
-    const opts = {
+    const opts: Opts = {
       baseURL: "https://example.com",
       fileDir: "/path/",
     };

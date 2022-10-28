@@ -50,6 +50,31 @@ function additionalExt(hasExt?: boolean) {
   };
 }
 
+/**
+ * the results
+ *
+ * @example
+ *
+ * Here is an example of a specific output result:
+ *
+ * ```typescript
+ * const result: Result = {
+ *   transform: true,
+ *   baseURL: "https://example.com",
+ *   fileDir: "/images/",
+ *   files: [
+ *     { name: "NDFCQTJCOVA4MEErVy0y.png", type: "image/png" },
+ *     { name: "NDFCQTJCOVA4MEErVy0y.avif", type: "image/avif" },
+ *     { name: "NDFCQTJCOVA4MEErVy0y.webp", type: "image/webp" },
+ *   ],
+ *   urls: [
+ *     "https://example.com/images/NDFCQTJCOVA4MEErVy0y.png",
+ *     "https://example.com/images/NDFCQTJCOVA4MEErVy0y.avif",
+ *     "https://example.com/images/NDFCQTJCOVA4MEErVy0y.webp",
+ *   ],
+ * };
+ * ```
+ */
 export type Result = {
   baseURL: string;
   filedir: string;
@@ -57,6 +82,14 @@ export type Result = {
   urls: URL[];
 };
 
+/**
+ * Set `baseURL`, `fileDir` and an optional `ext`.
+ *
+ * @remarks
+ * If you use a URL, `baseURL` and `fileDir` will be automatically set.
+ *
+ * If you use the file path, you need to specify it manually.
+ */
 export type Opts = {
   baseURL: string;
   fileDir: string;

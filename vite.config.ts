@@ -9,6 +9,7 @@ export default defineConfig({
       entry: path.resolve(__dirname, "src/mod.ts"),
       name: pkg.name,
     },
+    emptyOutDir: false,
     sourcemap: true,
   },
   define: {

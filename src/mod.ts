@@ -1,3 +1,14 @@
+/**
+ * A library for Entanglement Nomenclature.
+ *
+ * @remarks
+ * This module exports only one function `entanclature` to handle
+ * the Entanglement Nomenclature. `entanclature` accepts a `URL` or
+ * file path (Node.js only) as an argument and it always returns a fixed data structure.
+ *
+ * @packageDocumentation
+ */
+
 import fs from "fs/promises";
 import sysPath from "path";
 import { decode } from "./core/nomenclature";
@@ -12,47 +23,87 @@ import type { Data } from "./core/nomenclature";
 import type { Ext } from "./core/grammar";
 
 /**
- * This may be the only function you need to follow!
+ * @public
  *
- * You can pass in a string of **file paths** or **URLs**.
+ * This is the main function of this project!
+ *
+ * @remarks
+ * You can pass in a string of file paths or URLs.
  * We will process them as appropriate and return information about
- * all files that pass through [Entanglement Nomenclature](/guide/what-is-entanclature).
+ * all files that pass through Entanglement Nomenclature.
  *
- * @param url - a string of URL
+ * If the string of a file path is passed, `meta`, `baseURL` and `fileDir` will be a must.
+ *
+ * @returns The {@link Result | result} of the processing.
  *
  * @example
- *
  * Promises are required because we will calculate the SHA-1 of the file.
  *
- * ```ts
- * const resultFromURL = await entanclature("https://example.com/IDQxQKEyQjkjUEFKVyM6.png");
+ * You can import and use it in your project like this:
  *
- * const opt = { baseURL: "https://example.com" };
- * const meta = {};
- * const resultFromFile = await entanclature("/path/of/the/file.png", meta, opt)
+ * ```typescript
+ * import { entanclature } from "entanclature";
+ *
+ * const url = "https://example.com/images/OTk0QTc5OVA4MEErVy04.png";
+ * const result = await entanclature(url);
+ *
+ * console.log(result);
  * ```
  *
- * If you don't like `await`, you can use `entanclature.formURL(url)`.
+ * @example
+ * We also support the local file path as a parameter (Node.js only),
+ * but you need to manually define the `meta` information for processing
+ * images, and specify the `baseURL` and `fileDir` of the URL:
  *
- * ```ts
- * const resultFromURL = entanclature.fromURL("https://example.com/IDQxQKEyQjkjUEFKVyM6.png");
+ * ```typescript
+ * import { entanclature } from "entanclature";
+ *
+ * import type { Meta, Opts } from "entanclature";
+ *
+ * const filePath = "./path/for/an/image.png";
+ * const meta = [
+ *   { type: "image/png", quality: 80 },
+ *   { type: "image/avif", quality: "+" },
+ *   { type: "image/webp", quality: "-" },
+ * ];
+ * const opts: Opts = {
+ *   baseURL: "https://example.com",
+ *   fileDir: "/images/",
+ * };
+ * const result = await entanclature(filePath, meta, opts);
+ *
+ * console.log(result);
  * ```
  *
- * Promise is required for `entanclature.formFile(path, meta, opt)`
+ * @example
+ * If you don't like `await`, you can also use `entanclature.form URL` to handle URLs:
  *
- * ```ts
- * const opt = { baseURL: "https://example.com" };
- * const meta = {};
- * const resultFromFile = await entanclature.fromFile("/path/of/the/file.png", meta, opt)
+ * ```typescript
+ * import { entanclature } from "entanclature";
+ *
+ * const url = "https://example.com/images/OTk0QTc5OVA4MEErVy04.png";
+ * const result = entanclature.fromURL(url);
+ *
+ * console.log(result);
+ * ```
+ *
+ * However, `await` is required for the file path,
+ * because we need to calculate the SHA-1 of the file:
+ *
+ * ```typescript
+ * import { entanclature } from "entanclature";
+ *
+ * // Omit defining `filePath`, `meta` and `opts` here.
+ *
+ * const result = await entanclature.fromURL(filePath, meta, opts);
+ *
+ * console.log(result);
  * ```
  */
+export const entanclature = Object.assign(main, { fromURL, fromFile });
+
+/** @public */
 async function main(url: string | URL): Promise<Result>;
-/**
- * If the string of a **file path** is passed, `meta` will be a must
- *
- * @param path - a string of file paths
- * @param meta - How should we handle this file?
- * */
 async function main(path: string, meta: Meta, opts: Opts): Promise<Result>;
 async function main(source: string | URL, meta?: Meta, opts?: Opts) {
   if (typeof source === "string" && !isURL(source)) {
@@ -62,6 +113,7 @@ async function main(source: string | URL, meta?: Meta, opts?: Opts) {
   }
 }
 
+/** @public */
 function fromURL(url: string | URL) {
   const _url = new URL(url);
   const breakpoint = _url.pathname.lastIndexOf("/") + 1;
@@ -80,6 +132,7 @@ function fromURL(url: string | URL) {
   } else throw Error(`We cannot convert this URL (${url})`);
 }
 
+/** @public */
 async function fromFile(path: string, meta: Meta, opts: Opts) {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
@@ -88,6 +141,19 @@ async function fromFile(path: string, meta: Meta, opts: Opts) {
   return mixer({ hash: hash(file), meta }, opts);
 }
 
-export const entanclature = Object.assign(main, { fromURL, fromFile });
-
-type Meta = Data["meta"];
+/** @inheritDoc Opts @inheritDoc Result */
+export type { Opts, Result } from "./core/entanglement";
+/** @inheritDoc Data @inheritDoc FileInfo */
+export type { Data, FileInfo } from "./core/nomenclature";
+/**
+ * An array, describe how to transform the images.
+ *
+ * @remarks
+ * Each element of the array corresponds to a picture.
+ * At the same time, the first element of the array
+ * is the original image.
+ *
+ * `type` is the MIME type of the image. `quality` is
+ * the quality of the image (allowed to be empty).
+ */
+export type Meta = Data["meta"];

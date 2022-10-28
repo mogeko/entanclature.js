@@ -66,11 +66,13 @@ function getQualityFromStr(str: string): Quality {
 
 type Quality = number | "+" | "-" | undefined;
 
+/** @internal */
 export type FileInfo = {
   name: string;
   type: Type;
 };
 
+/** @internal */
 export type Data = {
   hash: string;
   meta: {

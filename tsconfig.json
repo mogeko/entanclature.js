@@ -18,14 +18,5 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true
   },
-  "include": ["src"],
-  "typedocOptions": {
-    "entryPoints": ["src"],
-    "plugin": ["typedoc-plugin-markdown"],
-    "entryPointStrategy": "expand",
-    "entryDocument": "index.md",
-    "readme": "none",
-    "githubPages": false,
-    "out": "docs/api-reference"
-  }
+  "include": ["src"]
 }
