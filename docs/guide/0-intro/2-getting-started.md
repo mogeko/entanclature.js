@@ -18,7 +18,6 @@ title: 快速上手
 
 ```shell
 # npm
-npm install entanclature
 
 # yarn
 yarn add entanclature
@@ -87,4 +86,4 @@ console.log(result);
 
 ## Result
 
-参考[《输入 & 输出》](/2-function/1-parameters-and-results.html#结果-输出)。
+参考[《输入 & 输出》](/guide/2-function/1-parameters-and-results.html#结果-输出)。
