@@ -1,0 +1,44 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+  "mainEntryPointFilePath": "<projectFolder>/types/mod.d.ts",
+  "bundledPackages": [],
+  "compiler": {},
+  "apiReport": {
+    "enabled": true,
+    "reportFileName": "index.md",
+    "reportFolder": "<projectFolder>/docs/api-report/",
+    "reportTempFolder": "<projectFolder>/docs/api-report/",
+    "includeForgottenExports": true
+  },
+  "docModel": {
+    "enabled": true,
+    "apiJsonFilePath": "<projectFolder>/docs/api-reference/temp/<unscopedPackageName>.api.json",
+    "projectFolderUrl": "https://github.com/mogeko/entanclature.js",
+    "includeForgottenExports": false
+  },
+  "dtsRollup": {
+    "enabled": true
+  },
+  "tsdocMetadata": {
+    "enabled": false,
+    "tsdocMetadataFilePath": "<projectFolder>/docs/tsdoc-metadata.json"
+  },
+  "messages": {
+    "compilerMessageReporting": {
+      "default": {
+        "logLevel": "none"
+      }
+    },
+
+    "extractorMessageReporting": {
+      "default": {
+        "logLevel": "none"
+      }
+    },
+    "tsdocMessageReporting": {
+      "default": {
+        "logLevel": "none"
+      }
+    }
+  }
+}
