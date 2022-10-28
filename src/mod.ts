@@ -141,10 +141,9 @@ async function fromFile(path: string, meta: Meta, opts: Opts) {
   return mixer({ hash: hash(file), meta }, opts);
 }
 
-/** @inheritDoc Opts @inheritDoc Result */
 export type { Opts, Result } from "./core/entanglement";
-/** @inheritDoc Decoded @inheritDoc Encoded */
-export type { Decoded, Encoded } from "./core/nomenclature";
+export type { Decoded, Encoded, Quality } from "./core/nomenclature";
+export type { GRAMMAR, Type, Mark, Ext, ValueOf } from "./core/grammar";
 /**
  * An array, describe how to transform the images.
  *

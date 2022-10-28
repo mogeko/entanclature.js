@@ -64,7 +64,8 @@ function getQualityFromStr(str: string): Quality {
   }
 }
 
-type Quality = number | "+" | "-" | undefined;
+/** Available quality identifiers. */
+export type Quality = number | "+" | "-" | undefined;
 
 /**
  * Record the encoded information.

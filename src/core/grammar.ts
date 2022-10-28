@@ -1,5 +1,10 @@
-/** @readonly */
-const GRAMMAR = {
+/**
+ * The relationship between {@link Type | MIME Type},
+ * {@link Mark} and {@link Ext}.
+ *
+ * @readonly
+ */
+export const GRAMMAR = {
   A: { type: "image/avif", ext: ["avif"] },
   G: { type: "image/gif", ext: ["gif"] },
   J: { type: "image/jpeg", ext: ["jpeg", "jpg"] },
@@ -34,10 +39,13 @@ export function getExtFromType(type: Type) {
   })?.ext[0];
 }
 
-type ValueOf<T> = T[keyof T];
-
+/** Get all possible values of T */
+export type ValueOf<T> = T[keyof T];
+/** Available type identifiers */
 export type Mark = keyof typeof GRAMMAR;
+/** Available MIME types */
 export type Type = ValueOf<typeof GRAMMAR>["type"];
+/** Available file extensions */
 export type Ext = ValueOf<typeof GRAMMAR>["ext"][number];
 
 if (import.meta.vitest) {
