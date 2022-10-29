@@ -19,7 +19,7 @@ import { isURL } from "./utils/is_url";
 import { isEmpty } from "./utils/is_empty";
 
 import type { Opts, Result } from "./core/entanglement";
-import type { Data } from "./core/nomenclature";
+import type { Decoded } from "./core/nomenclature";
 import type { Ext } from "./core/grammar";
 
 /**
@@ -141,10 +141,9 @@ async function fromFile(path: string, meta: Meta, opts: Opts) {
   return mixer({ hash: hash(file), meta }, opts);
 }
 
-/** @inheritDoc Opts @inheritDoc Result */
 export type { Opts, Result } from "./core/entanglement";
-/** @inheritDoc Data @inheritDoc FileInfo */
-export type { Data, FileInfo } from "./core/nomenclature";
+export type { Decoded, Encoded, Quality } from "./core/nomenclature";
+export type { GRAMMAR, Type, Mark, Ext, ValueOf } from "./core/grammar";
 /**
  * An array, describe how to transform the images.
  *
@@ -156,4 +155,4 @@ export type { Data, FileInfo } from "./core/nomenclature";
  * `type` is the MIME type of the image. `quality` is
  * the quality of the image (allowed to be empty).
  */
-export type Meta = Data["meta"];
+export type Meta = Decoded["meta"];

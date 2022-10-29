@@ -5,14 +5,14 @@
   "compiler": {},
   "apiReport": {
     "enabled": true,
-    "reportFileName": "index.md",
-    "reportFolder": "<projectFolder>/docs/api-report/",
-    "reportTempFolder": "<projectFolder>/docs/api-report/",
+    "reportFileName": "api-report.md",
+    "reportFolder": "<projectFolder>/docs/api-reference/",
+    "reportTempFolder": "<projectFolder>/docs/api-reference/",
     "includeForgottenExports": true
   },
   "docModel": {
     "enabled": true,
-    "apiJsonFilePath": "<projectFolder>/docs/api-reference/temp/<unscopedPackageName>.api.json",
+    "apiJsonFilePath": "<projectFolder>/docs/api-reference/_/temp/<unscopedPackageName>.api.json",
     "projectFolderUrl": "https://github.com/mogeko/entanclature.js",
     "includeForgottenExports": false
   },
@@ -21,7 +21,7 @@
   },
   "tsdocMetadata": {
     "enabled": false,
-    "tsdocMetadataFilePath": "<projectFolder>/docs/tsdoc-metadata.json"
+    "tsdocMetadataFilePath": "<projectFolder>/docs/api-reference/tsdoc-metadata.json"
   },
   "messages": {
     "compilerMessageReporting": {

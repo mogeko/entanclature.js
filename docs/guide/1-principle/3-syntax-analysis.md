@@ -36,7 +36,7 @@ Meta 信息由数组相互独立的**类型标识符** + **图片质量信息标
 | `W`        | WebP | 万维网图像格式       | `image/webp` | `.webp`        |
 | ...        | ...  | ...                  | ...          | ...            |
 
-完整列表可以在[这里](/2-function/2-available-type)获取。
+完整列表可以在[这里](/guide/2-function/2-available-type)获取。
 
 以下是图片质量标识以及其具体含义：
 

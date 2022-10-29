@@ -5,7 +5,7 @@ import { check } from "./calibration";
 
 import type { Type, Mark } from "./grammar";
 
-export function encode({ hash, meta }: Data): FileInfo {
+export function encode({ hash, meta }: Decoded): Encoded {
   const init = { text: hash, type: null as unknown as Type };
   const { text, type } = meta.reduce((acc, m) => {
     const mark = getMarksFromType(m.type);
@@ -21,7 +21,7 @@ export function encode({ hash, meta }: Data): FileInfo {
   return { name: base64.encode(text + check(text)), type };
 }
 
-export function decode(file: FileInfo): Data {
+export function decode(file: Encoded): Decoded {
   const text = base64.decode(file.name);
   const [hash, sentence, checksum] = splitText(text);
 
@@ -32,7 +32,7 @@ export function decode(file: FileInfo): Data {
   const words = sentence.match(/([AGJPTW][\d\+\-]*)/g);
 
   if (words) {
-    const meta: Data["meta"] = words.map((w) => ({
+    const meta: Decoded["meta"] = words.map((w) => ({
       type: getTypeFromMark(w.slice(0, 1) as Mark),
       quality: getQualityFromStr(w.slice(1)),
     }));
@@ -64,16 +64,34 @@ function getQualityFromStr(str: string): Quality {
   }
 }
 
-type Quality = number | "+" | "-" | undefined;
+/** Available quality identifiers. */
+export type Quality = number | "+" | "-" | undefined;
 
-/** @internal */
-export type FileInfo = {
+/**
+ * Record the encoded information.
+ *
+ * @remarks
+ * The `name` is the encoded string.
+ *
+ * The `type` is the MIME type of the image.
+ *
+ * What is the extension of `name` depends on `type`;
+ * at the same time, whether there is an extension
+ * depends on {@link Opts}'s `ext`.
+ *
+ * @public
+ */
+export type Encoded = {
   name: string;
   type: Type;
 };
 
-/** @internal */
-export type Data = {
+/**
+ * All the information needed to encode an image.
+ *
+ * @public
+ */
+export type Decoded = {
   hash: string;
   meta: {
     type: Type;
@@ -84,7 +102,7 @@ export type Data = {
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest;
-  const meta: Data["meta"] = [
+  const meta: Decoded["meta"] = [
     { type: "image/png", quality: 80 },
     { type: "image/avif", quality: "+" },
     { type: "image/webp", quality: "-" },
