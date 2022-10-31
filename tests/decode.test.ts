@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { decode } from "../src/core/nomenclature";
 
-import type { FileInfo } from "../src/core/nomenclature";
+import type { Encoded } from "../src/core/nomenclature";
 
 describe("decode", () => {
   it("Decode with a empty file name", () => {
@@ -14,7 +14,7 @@ describe("decode", () => {
   });
 
   it("Decode with a wrong file name", () => {
-    const file: FileInfo = {
+    const file: Encoded = {
       name: "aXRfaXNfYV93cm9uZ190ZXh0NA",
       type: "image/avif",
     };
