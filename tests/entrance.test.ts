@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { entanclature } from "../src/mod";
+import { entanclature } from "../src/core/entrance";
 import mock from "mock-fs";
 
-import type { Meta, Opts } from "../src/mod";
+import type { Meta } from "../src/core/entrance";
+import type { Opts } from "../src/core/entanglement";
 
 describe("entanclature", () => {
   beforeAll(() => {
