@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
-import { entanclature } from "../src/core/entrance";
+import { entanclature } from "../src/core/entanclature";
 import mock from "mock-fs";
 
-import type { Meta } from "../src/core/entrance";
+import type { Meta } from "../src/core/entanclature";
 import type { Opts } from "../src/core/entanglement";
 
 describe("entanclature", () => {

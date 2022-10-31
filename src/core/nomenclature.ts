@@ -1,7 +1,7 @@
 import { getTypeFromMark, getMarksFromType } from "./grammar";
 import { isEmpty } from "../utils/is_empty";
 import { base64 } from "../utils/base64";
-import { check } from "./calibration";
+import { check } from "./verification";
 
 import type { Type, Mark } from "./grammar";
 
