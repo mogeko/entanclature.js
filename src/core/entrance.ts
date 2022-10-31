@@ -12,11 +12,12 @@ import type { Decoded } from "./nomenclature";
 import type { Ext } from "./grammar";
 
 /**
- * @public
- *
  * This is the main function of this project!
  *
  * @remarks
+ * This is a wrapper around the functions {@link router},
+ * {@link fromURL} and {@link fromFile}.
+ *
  * You can pass in a string of file paths or URLs.
  * We will process them as appropriate and return information about
  * all files that pass through Entanglement Nomenclature.
@@ -26,8 +27,6 @@ import type { Ext } from "./grammar";
  * @returns The {@link Result | result} of the processing.
  *
  * @example
- * Promises are required because we will calculate the SHA-1 of the file.
- *
  * You can import and use it in your project like this:
  *
  * ```typescript
@@ -89,12 +88,74 @@ import type { Ext } from "./grammar";
  * console.log(result);
  * ```
  */
-export const entanclature = Object.assign(root, { fromURL, fromFile });
+export const entanclature = Object.assign(router, { fromURL, fromFile });
 
-/** @public */
-export async function root(url: string | URL): Promise<Result>;
-export async function root(path: string, meta: Meta, opts: Opts): Promise<Result>;
-export async function root(source: string | URL, meta?: Meta, opts?: Opts) {
+/**
+ * *Route for different parameters.
+ *
+ *
+ * @param url - The URL of the image
+ * @returns The {@link Result | result} of the processing.
+ *
+ * @remarks
+ * You can't use this function directly. You need to use it through
+ * {@link entanclature}.
+ *
+ * This function passes the parameter to the {@link fromURL} as the
+ * parameter is URL.
+ *
+ * @example
+ * ```typescript
+ * import { entanclature } from "entanclature";
+ *
+ * const url = "https://example.com/images/OTk0QTc5OVA4MEErVy04.png";
+ * const result = await entanclature(url);
+ *
+ * console.log(result);
+ * ```
+ */
+export async function router(url: string | URL): Promise<Result>;
+/**
+ * *Route for different parameters.
+ *
+ * @param path - The path of the image
+ * @param meta - The meta information of the image
+ * @param opts - The options for processing
+ * @returns The {@link Result | result} of the processing.
+ *
+ * @remarks
+ * You can't use this function directly. You need to use it through
+ * {@link entanclature}.
+ *
+ * This function passes the parameter to the {@link fromFile} as the
+ * parameter is a file path.
+ *
+ * In this case, you should tell us how to handle the image (`meta`)
+ * and manually specify the `baseURL` and `fileDir`.
+ *
+ * @example
+ * ```typescript
+ * import { entanclature } from "entanclature";
+ *
+ * import type { Meta, Opts } from "entanclature";
+ *
+ * const filePath = "./path/for/an/image.png";
+ * const meta = [
+ *   { type: "image/png", quality: 80 },
+ *   { type: "image/avif", quality: "+" },
+ *   { type: "image/webp", quality: "-" },
+ * ];
+ * const opts: Opts = {
+ *   baseURL: "https://example.com",
+ *   fileDir: "/images/",
+ * };
+ * const result = await entanclature(filePath, meta, opts);
+ *
+ * console.log(result);
+ * ```
+ */
+export async function router(path: string, meta: Meta, opts: Opts): Promise<Result>;
+export async function router(source: string | URL, meta?: Meta, opts?: Opts) {
   if (typeof source === "string" && !isURL(source)) {
     return meta && opts ? await fromFile(source, meta, opts) : void 0;
   } else {
@@ -102,7 +163,29 @@ export async function root(source: string | URL, meta?: Meta, opts?: Opts) {
   }
 }
 
-/** @public */
+/**
+ * *Process the image from the URL.
+ *
+ * @param url - The URL of the image
+ * @returns The {@link Result | result} of the processing.
+ *
+ * @remarks
+ * You can't use this function directly. You need to use it through
+ * {@link entanclature}.
+ *
+ * This function is usually used as `entanclature.fromURL` to avoid
+ * using `await` in the code.
+ *
+ * @example
+ * ```typescript
+ * import { entanclature } from "entanclature";
+ *
+ * const url = "https://example.com/images/OTk0QTc5OVA4MEErVy04.png";
+ * const result = entanclature.fromURL(url);
+ *
+ * console.log(result);
+ * ```
+ */
 export function fromURL(url: string | URL) {
   const _url = new URL(url);
   const breakpoint = _url.pathname.lastIndexOf("/") + 1;
@@ -121,7 +204,43 @@ export function fromURL(url: string | URL) {
   } else throw Error(`We cannot convert this URL (${url})`);
 }
 
-/** @public */
+/**
+ * *Process the image from the file path.
+ *
+ * @param path - The path of the image
+ * @param meta - The meta information of the image
+ * @param opts - The options for processing
+ * @returns The {@link Result | result} of the processing.
+ *
+ * @remarks
+ * You can't use this function directly. You need to use it through
+ * {@link entanclature}.
+ *
+ * `await` is required for this function, because we need to calculate
+ * the SHA-1 of the file.
+ *
+ * @example
+ * ```typescript
+ * import { entanclature } from "entanclature";
+ *
+ * import type { Meta, Opts } from "entanclature";
+ *
+ * const filePath = "./path/for/an/image.png";
+ * const meta = [
+ *   { type: "image/png", quality: 80 },
+ *   { type: "image/avif", quality: "+" },
+ *   { type: "image/webp", quality: "-" },
+ * ];
+ * const opts: Opts = {
+ *   baseURL: "https://example.com",
+ *   fileDir: "/images/",
+ * };
+ *
+ * const result = await entanclature.fromURL(filePath, meta, opts);
+ *
+ * console.log(result);
+ * ```
+ */
 export async function fromFile(path: string, meta: Meta, opts: Opts) {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
