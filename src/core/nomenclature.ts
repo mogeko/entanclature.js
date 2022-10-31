@@ -78,19 +78,13 @@ export type Quality = number | "+" | "-" | undefined;
  * What is the extension of `name` depends on `type`;
  * at the same time, whether there is an extension
  * depends on {@link Opts}'s `ext`.
- *
- * @public
  */
 export type Encoded = {
   name: string;
   type: Type;
 };
 
-/**
- * All the information needed to encode an image.
- *
- * @public
- */
+/** All the information needed to encode an image. */
 export type Decoded = {
   hash: string;
   meta: {

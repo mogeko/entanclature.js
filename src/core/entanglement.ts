@@ -51,7 +51,7 @@ function additionalExt(hasExt?: boolean) {
 }
 
 /**
- * the results
+ * the results.
  *
  * @example
  *

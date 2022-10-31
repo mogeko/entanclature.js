@@ -94,7 +94,7 @@ export const entanclature = Object.assign(router, { fromURL, fromFile });
  * *Route for different parameters.
  *
  *
- * @param url - The URL of the image
+ * @param url - The URL of the image.
  * @returns The {@link Result | result} of the processing.
  *
  * @remarks
@@ -118,9 +118,9 @@ export async function router(url: string | URL): Promise<Result>;
 /**
  * *Route for different parameters.
  *
- * @param path - The path of the image
- * @param meta - The meta information of the image
- * @param opts - The options for processing
+ * @param path - The path of the image.
+ * @param meta - The meta information of the image.
+ * @param opts - The options for processing.
  * @returns The {@link Result | result} of the processing.
  *
  * @remarks
@@ -207,9 +207,9 @@ export function fromURL(url: string | URL) {
 /**
  * *Process the image from the file path.
  *
- * @param path - The path of the image
- * @param meta - The meta information of the image
- * @param opts - The options for processing
+ * @param path - The path of the image.
+ * @param meta - The meta information of the image.
+ * @param opts - The options for processing.
  * @returns The {@link Result | result} of the processing.
  *
  * @remarks

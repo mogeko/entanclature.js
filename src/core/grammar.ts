@@ -39,13 +39,17 @@ export function getExtFromType(type: Type) {
   })?.ext[0];
 }
 
-/** Get all possible values of T */
+/**
+ * Get all possible values of T.
+ *
+ * @typeParam T - The target structure that has the Type we may need.
+ */
 export type ValueOf<T> = T[keyof T];
-/** Available type identifiers */
+/** Available type identifiers. */
 export type Mark = keyof typeof GRAMMAR;
-/** Available MIME types */
+/** Available MIME types. */
 export type Type = ValueOf<typeof GRAMMAR>["type"];
-/** Available file extensions */
+/** Available file extensions. */
 export type Ext = ValueOf<typeof GRAMMAR>["ext"][number];
 
 if (import.meta.vitest) {

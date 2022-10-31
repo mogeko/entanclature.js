@@ -1,4 +1,6 @@
+/** Calculate the verification code of `text`. */
 export function check(text: string): Checksum;
+/** Test whether the verification code of `text` is equal to `checksum`. */
 export function check(text: string, checksum: string): boolean;
 export function check(text: string, checksum?: string): Checksum | boolean {
   if (checksum) return check(text) === checksum;
@@ -9,17 +11,19 @@ export function check(text: string, checksum?: string): Checksum | boolean {
   return (sum < 10 ? sum.toString() : "X") as Checksum;
 }
 
-/** [2^(n-1)%11, 2^(n-2)%11, ..., 2^1%11] */
+/** `[2^(n-1)%11, 2^(n-2)%11, 2^(n-3)%11, ..., 2^2%11, 2^1%11]` */
 function coefficient(length: number) {
   const set = [1, 2, 4, 8, 5, 10, 9, 7, 3, 6];
 
   return Array.from({ length }, (_, i) => set[(length - i) % 10]);
 }
 
+/** Get the ASCII code list corresponding to the string */
 function getCharCodeFromStr(str: string) {
   return Array.from(str, (c) => c.charCodeAt(0));
 }
 
+/** Available verification codes. */
 type Checksum = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "X";
 
 if (import.meta.vitest) {
