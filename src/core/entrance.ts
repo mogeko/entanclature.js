@@ -186,7 +186,7 @@ export async function router(source: string | URL, meta?: Meta, opts?: Opts) {
  * console.log(result);
  * ```
  */
-export function fromURL(url: string | URL) {
+export function fromURL(url: string | URL): Result {
   const _url = new URL(url);
   const breakpoint = _url.pathname.lastIndexOf("/") + 1;
   const [name, ext] = _url.pathname.slice(breakpoint).split(".");
@@ -197,11 +197,19 @@ export function fromURL(url: string | URL) {
     ext: !isEmpty(ext),
   };
 
-  if (type && opts.ext) {
+  try {
     return mixer(decode({ name, type }), opts);
-  } else if (!opts.ext) {
-    throw Error("The URL should end with a suffix.");
-  } else throw Error(`We cannot convert this URL (${url})`);
+  } catch (err: any) {
+    console.error(err);
+
+    return {
+      transform: false,
+      baseURL: opts.baseURL,
+      fileDir: opts.fileDir,
+      files: [{ name }],
+      urls: [_url],
+    };
+  }
 }
 
 /**
@@ -241,7 +249,7 @@ export function fromURL(url: string | URL) {
  * console.log(result);
  * ```
  */
-export async function fromFile(path: string, meta: Meta, opts: Opts) {
+export async function fromFile(path: string, meta: Meta, opts: Opts): Promise<Result> {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
 
@@ -269,7 +277,7 @@ if (import.meta.vitest) {
     const result = await entanclature("https://example.com/path/OTk0QTc5OVA4MEErVy04.png");
 
     expect(result.baseURL).toEqual("https://example.com");
-    expect(result.filedir).toEqual("/path/");
+    expect(result.fileDir).toEqual("/path/");
     expect(result.files).toEqual([
       { name: "OTk0QTc5OVA4MEErVy04.png", type: "image/png" },
       { name: "OTk0QTc5OUErUDgwVy0y.avif", type: "image/avif" },
@@ -280,8 +288,9 @@ if (import.meta.vitest) {
   it("fromURL", () => {
     const result = fromURL("https://example.com/path/OTk0QTc5OVA4MEErVy04.png");
 
+    expect(result.transform).toBeTruthy();
     expect(result.baseURL).toEqual("https://example.com");
-    expect(result.filedir).toEqual("/path/");
+    expect(result.fileDir).toEqual("/path/");
     expect(result.files).toEqual([
       { name: "OTk0QTc5OVA4MEErVy04.png", type: "image/png" },
       { name: "OTk0QTc5OUErUDgwVy0y.avif", type: "image/avif" },

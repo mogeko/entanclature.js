@@ -33,7 +33,7 @@ export function getTypeFromExt(ext: Ext) {
   return GRAMMAR_META.find((m) => Array.from(m.ext).includes(ext))?.type;
 }
 
-export function getExtFromType(type: Type) {
+export function getExtFromType(type: Type | undefined) {
   return GRAMMAR_META.find((m) => {
     return m.type === type;
   })?.ext[0];
@@ -65,7 +65,7 @@ if (import.meta.vitest) {
     try {
       getTypeFromMark("X" as Mark);
     } catch (err: any) {
-      expect(err.name).toEqual("TypeError");
+      expect(err).toBeInstanceOf(TypeError);
       expect(err.message).toEqual("X looks not a good type mark!");
     }
   });

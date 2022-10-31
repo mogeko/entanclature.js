@@ -6,23 +6,23 @@ import { check } from "./calibration";
 import type { Type, Mark } from "./grammar";
 
 export function encode({ hash, meta }: Decoded): Encoded {
-  const init = { text: hash, type: null as unknown as Type };
-  const { text, type } = meta.reduce((acc, m) => {
+  const init: Encoded = { name: hash };
+  const { name, type } = meta.reduce((acc, m) => {
     const mark = getMarksFromType(m.type);
     const quality = getStrFromQuality(m.quality);
 
     if (!mark || !quality) return acc;
     return {
-      text: acc.text.concat(mark, quality),
+      name: acc.name.concat(mark, quality),
       type: acc.type ?? m.type,
     };
   }, init);
 
-  return { name: base64.encode(text + check(text)), type };
+  return { name: base64.encode(name + check(name)), type };
 }
 
-export function decode(file: Encoded): Decoded {
-  const text = base64.decode(file.name);
+export function decode({ name }: Encoded): Decoded {
+  const text = base64.decode(name);
   const [hash, sentence, checksum] = splitText(text);
 
   if (!check(hash + sentence, checksum)) {
@@ -37,7 +37,7 @@ export function decode(file: Encoded): Decoded {
       quality: getQualityFromStr(w.slice(1)),
     }));
     return { hash, meta, check: checksum };
-  } else throw Error(`We can't process ${text} (base64: ${file.name})!`);
+  } else throw Error(`We can't process ${text} (base64: ${name})!`);
 }
 
 function splitText(text: string) {
@@ -81,7 +81,7 @@ export type Quality = number | "+" | "-" | undefined;
  */
 export type Encoded = {
   name: string;
-  type: Type;
+  type?: Type;
 };
 
 /** All the information needed to encode an image. */
@@ -145,7 +145,7 @@ if (import.meta.vitest) {
       expect(getQualityFromStr("")).toBeUndefined();
       getQualityFromStr("X");
     } catch (err: any) {
-      expect(err.name).toEqual("TypeError");
+      expect(err).toBeInstanceOf(TypeError);
       expect(err.message).toEqual("X looks not a good quality mark!");
     }
   });
