@@ -7,8 +7,9 @@ export function mixer(data: Decoded, opts: Opts): Result {
   const files = enumerator(data).map(encode).map(additionalExt(opts.ext));
 
   return {
+    transform: true,
     baseURL: opts.baseURL,
-    filedir: opts.fileDir ?? "/",
+    fileDir: opts.fileDir ?? "/",
     urls: files.map((file) => {
       return new URL(opts.fileDir + file.name, opts.baseURL);
     }),
@@ -51,7 +52,7 @@ function additionalExt(hasExt?: boolean) {
 }
 
 /**
- * the results
+ * the results.
  *
  * @example
  *
@@ -59,6 +60,7 @@ function additionalExt(hasExt?: boolean) {
  *
  * ```typescript
  * const result: Result = {
+ *   transform: true,
  *   baseURL: "https://example.com",
  *   fileDir: "/images/",
  *   files: [
@@ -75,8 +77,9 @@ function additionalExt(hasExt?: boolean) {
  * ```
  */
 export type Result = {
+  transform: boolean;
   baseURL: string;
-  filedir: string;
+  fileDir: string;
   files: Encoded[];
   urls: URL[];
 };
@@ -112,8 +115,9 @@ if (import.meta.vitest) {
   it("mixer", () => {
     const result = mixer(data, { baseURL, fileDir });
 
+    expect(result.transform).toBeTruthy();
     expect(result.baseURL).toEqual(baseURL);
-    expect(result.filedir).toEqual("/");
+    expect(result.fileDir).toEqual("/");
     expect(result.files).toEqual([
       { name: "NDFCQTJCOVA4MEErVy0y.png", type: "image/png" },
       { name: "NDFCQTJCOUErUDgwVy03.avif", type: "image/avif" },
@@ -121,7 +125,7 @@ if (import.meta.vitest) {
     ]);
     result.urls.map((url, i) => {
       const _url = new URL(url);
-      expect(_url.pathname).toEqual(`${result.filedir}${result.files[i].name}`);
+      expect(_url.pathname).toEqual(`${result.fileDir}${result.files[i].name}`);
     });
   });
 

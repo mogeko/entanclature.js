@@ -94,7 +94,7 @@ export const entanclature = Object.assign(router, { fromURL, fromFile });
  * *Route for different parameters.
  *
  *
- * @param url - The URL of the image
+ * @param url - The URL of the image.
  * @returns The {@link Result | result} of the processing.
  *
  * @remarks
@@ -118,9 +118,9 @@ export async function router(url: string | URL): Promise<Result>;
 /**
  * *Route for different parameters.
  *
- * @param path - The path of the image
- * @param meta - The meta information of the image
- * @param opts - The options for processing
+ * @param path - The path of the image.
+ * @param meta - The meta information of the image.
+ * @param opts - The options for processing.
  * @returns The {@link Result | result} of the processing.
  *
  * @remarks
@@ -186,7 +186,7 @@ export async function router(source: string | URL, meta?: Meta, opts?: Opts) {
  * console.log(result);
  * ```
  */
-export function fromURL(url: string | URL) {
+export function fromURL(url: string | URL): Result {
   const _url = new URL(url);
   const breakpoint = _url.pathname.lastIndexOf("/") + 1;
   const [name, ext] = _url.pathname.slice(breakpoint).split(".");
@@ -197,19 +197,27 @@ export function fromURL(url: string | URL) {
     ext: !isEmpty(ext),
   };
 
-  if (type && opts.ext) {
+  try {
     return mixer(decode({ name, type }), opts);
-  } else if (!opts.ext) {
-    throw Error("The URL should end with a suffix.");
-  } else throw Error(`We cannot convert this URL (${url})`);
+  } catch (err: any) {
+    console.error(err);
+
+    return {
+      transform: false,
+      baseURL: opts.baseURL,
+      fileDir: opts.fileDir,
+      files: [{ name }],
+      urls: [_url],
+    };
+  }
 }
 
 /**
  * *Process the image from the file path.
  *
- * @param path - The path of the image
- * @param meta - The meta information of the image
- * @param opts - The options for processing
+ * @param path - The path of the image.
+ * @param meta - The meta information of the image.
+ * @param opts - The options for processing.
  * @returns The {@link Result | result} of the processing.
  *
  * @remarks
@@ -241,7 +249,7 @@ export function fromURL(url: string | URL) {
  * console.log(result);
  * ```
  */
-export async function fromFile(path: string, meta: Meta, opts: Opts) {
+export async function fromFile(path: string, meta: Meta, opts: Opts): Promise<Result> {
   const filepath = sysPath.resolve(path);
   const file = await fs.readFile(filepath);
 
@@ -261,3 +269,32 @@ export async function fromFile(path: string, meta: Meta, opts: Opts) {
  * the quality of the image (allowed to be empty).
  */
 export type Meta = Decoded["meta"];
+
+if (import.meta.vitest) {
+  const { it, expect } = import.meta.vitest;
+
+  it("entanclature", async () => {
+    const result = await entanclature("https://example.com/path/OTk0QTc5OVA4MEErVy04.png");
+
+    expect(result.baseURL).toEqual("https://example.com");
+    expect(result.fileDir).toEqual("/path/");
+    expect(result.files).toEqual([
+      { name: "OTk0QTc5OVA4MEErVy04.png", type: "image/png" },
+      { name: "OTk0QTc5OUErUDgwVy0y.avif", type: "image/avif" },
+      { name: "OTk0QTc5OVctQStQODA5.webp", type: "image/webp" },
+    ]);
+  });
+
+  it("fromURL", () => {
+    const result = fromURL("https://example.com/path/OTk0QTc5OVA4MEErVy04.png");
+
+    expect(result.transform).toBeTruthy();
+    expect(result.baseURL).toEqual("https://example.com");
+    expect(result.fileDir).toEqual("/path/");
+    expect(result.files).toEqual([
+      { name: "OTk0QTc5OVA4MEErVy04.png", type: "image/png" },
+      { name: "OTk0QTc5OUErUDgwVy0y.avif", type: "image/avif" },
+      { name: "OTk0QTc5OVctQStQODA5.webp", type: "image/webp" },
+    ]);
+  });
+}

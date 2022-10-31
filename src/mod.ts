@@ -9,9 +9,9 @@
  * @packageDocumentation
  */
 
-export { entanclature } from "./core/entrance";
+export { entanclature } from "./core/entanclature";
 
-export type { Meta, router, fromFile, fromURL } from "./core/entrance";
+export type { Meta, router, fromFile, fromURL } from "./core/entanclature";
 export type { Opts, Result } from "./core/entanglement";
 export type { Decoded, Encoded, Quality } from "./core/nomenclature";
 export type { GRAMMAR, Type, Mark, Ext, ValueOf } from "./core/grammar";

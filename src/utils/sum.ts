@@ -1,8 +1,8 @@
 /**
  * This function sums the given numbers.
  *
- * @param xs - The array to be calculated
- * @returns The sum of all elements in the number array
+ * @param xs - The array to be calculated.
+ * @returns The sum of all elements in the number array.
  *
  * @example
  * ```typescript

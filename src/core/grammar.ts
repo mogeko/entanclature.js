@@ -33,19 +33,23 @@ export function getTypeFromExt(ext: Ext) {
   return GRAMMAR_META.find((m) => Array.from(m.ext).includes(ext))?.type;
 }
 
-export function getExtFromType(type: Type) {
+export function getExtFromType(type: Type | undefined) {
   return GRAMMAR_META.find((m) => {
     return m.type === type;
   })?.ext[0];
 }
 
-/** Get all possible values of T */
+/**
+ * Get all possible values of T.
+ *
+ * @typeParam T - The target structure that has the Type we may need.
+ */
 export type ValueOf<T> = T[keyof T];
-/** Available type identifiers */
+/** Available type identifiers. */
 export type Mark = keyof typeof GRAMMAR;
-/** Available MIME types */
+/** Available MIME types. */
 export type Type = ValueOf<typeof GRAMMAR>["type"];
-/** Available file extensions */
+/** Available file extensions. */
 export type Ext = ValueOf<typeof GRAMMAR>["ext"][number];
 
 if (import.meta.vitest) {
@@ -61,7 +65,7 @@ if (import.meta.vitest) {
     try {
       getTypeFromMark("X" as Mark);
     } catch (err: any) {
-      expect(err.name).toEqual("TypeError");
+      expect(err).toBeInstanceOf(TypeError);
       expect(err.message).toEqual("X looks not a good type mark!");
     }
   });
