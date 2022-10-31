@@ -261,3 +261,31 @@ export async function fromFile(path: string, meta: Meta, opts: Opts) {
  * the quality of the image (allowed to be empty).
  */
 export type Meta = Decoded["meta"];
+
+if (import.meta.vitest) {
+  const { it, expect } = import.meta.vitest;
+
+  it("entanclature", async () => {
+    const result = await entanclature("https://example.com/path/OTk0QTc5OVA4MEErVy04.png");
+
+    expect(result.baseURL).toEqual("https://example.com");
+    expect(result.filedir).toEqual("/path/");
+    expect(result.files).toEqual([
+      { name: "OTk0QTc5OVA4MEErVy04.png", type: "image/png" },
+      { name: "OTk0QTc5OUErUDgwVy0y.avif", type: "image/avif" },
+      { name: "OTk0QTc5OVctQStQODA5.webp", type: "image/webp" },
+    ]);
+  });
+
+  it("fromURL", () => {
+    const result = fromURL("https://example.com/path/OTk0QTc5OVA4MEErVy04.png");
+
+    expect(result.baseURL).toEqual("https://example.com");
+    expect(result.filedir).toEqual("/path/");
+    expect(result.files).toEqual([
+      { name: "OTk0QTc5OVA4MEErVy04.png", type: "image/png" },
+      { name: "OTk0QTc5OUErUDgwVy0y.avif", type: "image/avif" },
+      { name: "OTk0QTc5OVctQStQODA5.webp", type: "image/webp" },
+    ]);
+  });
+}
