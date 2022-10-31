@@ -1,3 +1,15 @@
+/**
+ * This function sums the given numbers.
+ *
+ * @param xs - The array to be calculated
+ * @returns The sum of all elements in the number array
+ *
+ * @example
+ * ```typescript
+ * sum(); // 0
+ * sum([1, 2, 3]); // 6
+ * ```
+ */
 export function sum(...xs: number[]) {
   return xs.reduce((a, b) => a + b, 0);
 }
