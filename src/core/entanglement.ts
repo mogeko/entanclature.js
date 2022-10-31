@@ -59,7 +59,6 @@ function additionalExt(hasExt?: boolean) {
  *
  * ```typescript
  * const result: Result = {
- *   transform: true,
  *   baseURL: "https://example.com",
  *   fileDir: "/images/",
  *   files: [
