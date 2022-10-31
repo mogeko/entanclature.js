@@ -64,7 +64,7 @@ import type { Ext } from "./grammar";
  * ```
  *
  * @example
- * If you don't like `await`, you can also use `entanclature.form URL` to handle URLs:
+ * If you don't like `await`, you can also use `entanclature.formURL` to handle URLs:
  *
  * ```typescript
  * import { entanclature } from "entanclature";
@@ -91,7 +91,7 @@ import type { Ext } from "./grammar";
 export const entanclature = Object.assign(router, { fromURL, fromFile });
 
 /**
- * *Route for different parameters.
+ * (internal) Route for different parameters.
  *
  *
  * @param url - The URL of the image.
@@ -116,7 +116,7 @@ export const entanclature = Object.assign(router, { fromURL, fromFile });
  */
 export async function router(url: string | URL): Promise<Result>;
 /**
- * *Route for different parameters.
+ * (internal) Route for different parameters.
  *
  * @param path - The path of the image.
  * @param meta - The meta information of the image.
@@ -164,9 +164,9 @@ export async function router(source: string | URL, meta?: Meta, opts?: Opts) {
 }
 
 /**
- * *Process the image from the URL.
+ * (internal) Process the image from the URL.
  *
- * @param url - The URL of the image
+ * @param url - The URL of the image.
  * @returns The {@link Result | result} of the processing.
  *
  * @remarks
@@ -213,7 +213,7 @@ export function fromURL(url: string | URL): Result {
 }
 
 /**
- * *Process the image from the file path.
+ * (internal) Process the image from the file path.
  *
  * @param path - The path of the image.
  * @param meta - The meta information of the image.
